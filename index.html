@@ -156,7 +156,7 @@
       position: relative;
     }
 
-    /* Override #loginBox ให้ไม่มีกรอบและเต็มจอ ตามที่คุณขอ */
+    /* Override #loginBox ให้ไม่มีกรอบและเต็มจอ */
     #loginBox.system-container { 
       background: transparent !important; 
       box-shadow: none !important; 
@@ -201,7 +201,6 @@
     .grid-icon svg.icon-file { width: 48px; height: auto; }
     .grid-icon svg.icon-wide { width: 62px; height: auto; }
 
-    /* ป้องกันข้อความล้น และไม่ให้ย่อเป็น ... */
     .grid-name { font-size: 13px; font-weight: 500; color: var(--apple-text-main); text-align: center; line-height: 1.4; width: 100%; word-break: break-word; white-space: normal; }
     .grid-lock { font-size: 12px; margin-top: 6px; color: var(--apple-text-main); text-align: center; display: flex; align-items: center; justify-content: center; gap: 4px; }
     .grid-time { font-size: 11px; color: var(--apple-text-muted); margin-top: 6px; text-align: center; line-height: 1.3; }
@@ -458,9 +457,9 @@
         
         <input type="text" id="studentId" placeholder="ระบุชื่อ หรือรหัสประจำตัว..." required autocomplete="off">
         
-        <!-- ส่วน Cloudflare Turnstile ตรวจจับบอท -->
+        <!-- ส่วน Cloudflare Turnstile ตรวจจับบอท (คีย์สำหรับทดสอบ) -->
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAAEUke67A2otQ6JbL"></div>
+            <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA"></div>
         </div>
 
         <button class="sys-btn btn-login" onclick="checkData()" data-i18n="sys_btn_login">เข้าสู่ระบบ</button>
@@ -589,7 +588,6 @@
   <!-- 2. View: นโยบายการคุ้มครองข้อมูลส่วนบุคคล -->
   <main id="policyView" class="view-section">
       <div class="policy-container">
-          <!-- แสดงเฉพาะคำว่า นโยบายการคุ้มครองข้อมูลส่วนบุคคล ตามคำขอ -->
           <div class="breadcrumb" data-i18n="breadcrumb">นโยบายการคุ้มครองข้อมูลส่วนบุคคล</div>
           
           <h1 data-i18n="page_title">นโยบายการคุ้มครองข้อมูลส่วนบุคคล</h1>
@@ -612,7 +610,6 @@
           <div class="breadcrumb" data-i18n="nav_3">คู่มือการใช้งาน</div>
           <h1>สอนการใช้งานระบบ</h1>
           
-          <!-- กล่องข้อความอธิบายด้านบน -->
           <div style="background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.05); padding: 25px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
               <h3 style="margin-top:0; margin-bottom: 10px; color: var(--pink-primary);">วิธีการใช้งานระบบเบื้องต้น</h3>
               <p style="margin-bottom: 10px; font-size: 15px;">คุณสามารถแก้ไขเนื้อหาส่วนนี้ได้ในโค้ด (ใส่ตัวอย่างไว้ให้ก่อน)</p>
@@ -622,7 +619,6 @@
               </ul>
           </div>
 
-          <!-- วิดีโอ YouTube ด้านล่าง (ใส่ลิงก์ของคุณที่ src="..." ได้เลย) -->
           <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
               <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="สอนการใช้งานระบบ" allowfullscreen></iframe>
           </div>
@@ -632,18 +628,15 @@
   <!-- ================== FOOTER ================== -->
   <footer id="footerArea">
       <div class="footer-grid">
-          <!-- คอลัมน์ที่ 1: เกี่ยวกับระบบ -->
           <div class="footer-col">
               <h3 data-i18n="footer_col1">เกี่ยวกับระบบ</h3>
               <ul>
-                  <!-- คลิกลิงก์เพื่อเปิด Pop-up ข้อความ -->
                   <li><a href="#" onclick="openInfoModal('แนะนำระบบ', '<p>เนื้อหาแนะนำระบบ (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link1">แนะนำระบบ</a></li>
                   <li><a href="#" onclick="openInfoModal('ความปลอดภัย', '<p>เนื้อหาความปลอดภัย (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link2">ความปลอดภัย</a></li>
                   <li><a href="#" onclick="openInfoModal('โครงสร้างระบบ', '<p>เนื้อหาโครงสร้างระบบ (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link3">โครงสร้างระบบ</a></li>
               </ul>
           </div>
           
-          <!-- คอลัมน์ที่ 2: ติดต่อเรา -->
           <div class="footer-col">
               <h3 data-i18n="footer_col3">ติดต่อเรา</h3>
               <ul style="color: #bbb; font-size: 14px; line-height: 2;">
@@ -659,7 +652,6 @@
               <a href="#" onclick="switchTab('policyView', null)" data-i18n="legal_2">นโยบายการคุ้มครองข้อมูลส่วนบุคคล</a>
           </div>
           <div class="social-icons">
-              <!-- ไม่แสดง Toast เด้งบอกอีกแล้วตามคำขอ -->
               <button class="reset-btn" onclick="resetCookies()" data-i18n="btn_reset">รีเซ็ตค่าคุกกี้ (สำหรับทดสอบ)</button>
           </div>
       </div>
@@ -667,18 +659,15 @@
 
   <!-- ================== MODALS (UI ทั่วไป) ================== -->
   
-  <!-- Info Modal (แสดงข้อมูลจาก Footer) -->
   <div class="ui-modal" id="infoModal">
       <div class="ui-modal-content" style="max-width: 600px;">
           <button class="ui-close-btn" onclick="document.getElementById('infoModal').style.display='none'">&times;</button>
           <h3 id="infoModalTitle" style="color: var(--pink-primary); border-bottom: 2px solid #eee; padding-bottom: 10px;">หัวข้อ</h3>
           <div id="infoModalContent" style="font-size: 16px; color: #444; line-height: 1.6; word-break: break-word; margin-top: 15px;">
-              <!-- ข้อความจะถูกแทรกที่นี่ -->
           </div>
       </div>
   </div>
 
-  <!-- Cookie Pop-up -->
   <div class="cookie-popup" id="cookieNotice">
       <h4 data-i18n="cookie_notice_title">คุกกี้บนเว็บไซต์นี้</h4>
       <p data-i18n="cookie_notice_desc">เราใช้คุกกี้ที่จำเป็นเพื่อให้เว็บไซต์และระบบทำงานได้อย่างราบรื่น</p>
@@ -688,7 +677,6 @@
       </div>
   </div>
 
-  <!-- Modal ตั้งค่าคุกกี้ -->
   <div class="ui-modal" id="cookieSettingsModal">
       <div class="ui-modal-content">
           <button class="ui-close-btn" onclick="document.getElementById('cookieSettingsModal').style.display='none'">&times;</button>
@@ -717,7 +705,6 @@
       </div>
   </div>
 
-  <!-- Modal เปลี่ยนภาษา -->
   <div class="ui-modal" id="langModal">
       <div class="ui-modal-content" style="max-width: 350px;">
           <button class="ui-close-btn" onclick="document.getElementById('langModal').style.display='none'">&times;</button>
@@ -730,7 +717,6 @@
       </div>
   </div>
 
-  <!-- Modal ตัวช่วยการเข้าถึง (Aa) -->
   <div class="ui-modal" id="accessModal">
       <div class="ui-modal-content" style="max-width: 380px;">
           <button class="ui-close-btn" onclick="document.getElementById('accessModal').style.display='none'">&times;</button>
@@ -752,7 +738,6 @@
 
 
   <!-- ================== MODALS (ของ Firebase DocumentSystem) ================== -->
-  <!-- Calendar Modal -->
   <div class="sys-modal-overlay" id="calendarModalOverlay">
     <div class="calendar-modal">
         <div class="calendar-header">
@@ -770,7 +755,6 @@
     </div>
   </div>
 
-  <!-- Event Detail Modal -->
   <div class="sys-modal-overlay" id="eventDetailOverlay">
     <div class="event-detail-modal">
         <button class="sys-close-btn" style="position: absolute; top: 15px; right: 15px;" onclick="closeEventDetail()">×</button>
@@ -788,7 +772,6 @@
     </div>
   </div>
 
-  <!-- Schedule Modal -->
   <div class="sys-modal-overlay" id="scheduleModalOverlay">
     <div class="schedule-modal">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -865,7 +848,6 @@
     window.acceptAllCookies = function() { localStorage.setItem('cookieConsent_DocSystem', 'accepted'); document.getElementById('cookieNotice').style.display = 'none'; }
     window.saveCookieSettings = function() { localStorage.setItem('cookieConsent_DocSystem', 'custom'); document.getElementById('cookieSettingsModal').style.display = 'none'; document.getElementById('cookieNotice').style.display = 'none'; }
     
-    // ไม่มีการแจ้งเตือนแล้วเมื่อกดรีเซ็ต
     window.resetCookies = function() { 
         localStorage.removeItem('cookieConsent_DocSystem'); 
         document.getElementById('cookieNotice').style.display = 'block'; 
@@ -888,7 +870,7 @@
             footer_col3: "ติดต่อเรา", f_address: "123 ถนนตัวอย่าง แขวงทดสอบ<br>เขตระบบงาน กรุงเทพมหานคร 10000",
             legal_1: "การเปิดเผยข้อมูล", legal_2: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", btn_reset: "รีเซ็ตค่าคุกกี้ (สำหรับทดสอบ)",
             lang_title: "ภาษา", access_title: "ตัวช่วยการเข้าถึง", access_font: "ขนาดตัวอักษร", access_contrast: "โหมดสีตัดกันสูง",
-            cookie_notice_title: "คุกกี้บนเว็บไซต์นี้", cookie_notice_desc: "เราใช้คุกกี้ที่จำเป็นเพื่อให้เว็บไซต์และระบบแชทงานเอกสารทำงานได้อย่างราบรื่น",
+            cookie_notice_title: "คุกกี้บนเว็บไซต์นี้", cookie_notice_desc: "เราใช้คุกกี้ที่จำเป็นเพื่อให้เว็บไซต์และระบบทำงานได้อย่างราบรื่น",
             cookie_btn_settings: "ตั้งค่าคุกกี้", cookie_btn_accept: "ยอมรับทั้งหมด", cookie_title: "การตั้งค่าคุกกี้", cookie_desc: "คุณสามารถเลือกเปิดหรือปิดการใช้งานคุกกี้แต่ละประเภทได้",
             cookie_req_title: "คุกกี้ที่จำเป็นอย่างยิ่ง", cookie_req_desc: "จำเป็นสำหรับการทำงานพื้นฐานของระบบ ปิดไม่ได้", cookie_stat_title: "คุกกี้เพื่อการวิเคราะห์", cookie_stat_desc: "ช่วยให้เราเข้าใจการใช้งานของคุณเพื่อพัฒนาให้ดีขึ้น",
             btn_cancel: "ยกเลิก", btn_save: "บันทึกการตั้งค่า",
@@ -938,7 +920,6 @@
     // โค้ดส่วนระบบ DocumentSystem Firebase
     // ----------------------------------------------------
     window.checkData = async function() {
-      // 1. ตรวจสอบ Cloudflare Turnstile
       const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
       if (turnstileResponse && !turnstileResponse.value) {
           document.getElementById("errorMsg").innerText = "กรุณายืนยันว่าคุณไม่ใช่บอท";
@@ -1005,7 +986,7 @@
           document.getElementById("menuBox").style.display = "block";
           document.getElementById("menuTitle").innerText = `รหัสผู้ใช้งาน: ${currentId}`;
           document.getElementById("mainTopIcons").style.display = "flex";
-          document.getElementById("logoutHeaderBtn").style.display = "flex"; // แสดงปุ่มเมื่อล็อกอินผ่าน
+          document.getElementById("logoutHeaderBtn").style.display = "flex"; 
           updateReminderBadge();
 
           currentPath = ""; renderExplorer();
@@ -1508,8 +1489,7 @@
       } catch(e) { downloadSection.innerHTML = "<p style='color:var(--apple-red); margin:0; font-weight: 500;'>เกิดข้อผิดพลาดในการดึงข้อมูล</p>"; }
     }
 
-    window.requestDownload = async function(jobId) { 
-
+    window.requestDownload = async function(jobId) {
       const file = userFiles.find(f => f.id === jobId); if (!file) return;
       const downloadSection = document.getElementById("downloadSection"); downloadSection.innerHTML = "<p style='color:var(--apple-blue); margin:0; font-weight: 500;'>ระบบกำลังส่งคำขอ...</p>";
       try {
