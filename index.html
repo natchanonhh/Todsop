@@ -66,7 +66,7 @@
         padding: 15px 5%; background-color: transparent; border-bottom: 1px solid rgba(0,0,0,0.05); width: 100%;
     }
     .logo-container { display: flex; align-items: center; gap: 15px; }
-    /* ลบกรอบสีชมพู ปรับให้เป็นรูปภาพโปร่งใสตามปกติ ใหญ่เห็นชัดแต่ไม่ล้น */
+    /* ลบกรอบสีชมพู ปรับให้เป็นรูปภาพโปร่งใสตามปกติ */
     .logo-img { height: 65px; width: auto; max-width: 250px; border: none; object-fit: contain; background: transparent; }
 
     .nav-links { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
@@ -365,7 +365,7 @@
     .badge { position: absolute; top: -5px; right: -5px; background: var(--apple-red); color: white; font-size: 9px; font-weight: bold; border-radius: 50%; min-width: 14px; height: 14px; display: flex; justify-content: center; align-items: center; padding: 2px; }
 
     .loader-wrapper { position: relative; display: flex; justify-content: center; align-items: center; height: 65px; width: 100%; margin-bottom: 10px; }
-    .z { position: absolute; font-size: 24px; font-weight: bold; color: var(--apple-blue); opacity: 0; }
+    .z { position: absolute; font-size: 24px; font-weight: bold; color: var(--pink-primary); opacity: 0; }
     .z-1 { animation: swayUpToRight 2s ease-out infinite; }
     .z-2 { animation: swayUpToRight 2s ease-out 0.5s infinite; }
     .z-3 { animation: swayUpToRight 2s ease-out 1s infinite; }
@@ -414,7 +414,7 @@
   <!-- ================== HEADER ================== -->
   <header>
       <div class="logo-container">
-          <!-- โลโก้โปร่งใส ไม่มีกรอบ -->
+          <!-- ใช้แค่รูปภาพโลโก้อย่างเดียว -->
           <img src="https://i.postimg.cc/hvWpwkgG/Docum.png" alt="Logo" class="logo-img">
       </div>
 
@@ -430,14 +430,17 @@
               <!-- 1. ปุ่ม Aa -->
               <button class="tool-btn" onclick="document.getElementById('accessModal').style.display='flex'">Aa</button>
               
-              <!-- 2. ปุ่มเปลี่ยนภาษา (โลก) -->
+              <!-- 2. ปุ่มเปลี่ยนภาษา แก้ไขโค้ดวงกลมโลกให้วาดแบบธรรมดา ป้องกันการเพี้ยนบน Safari -->
               <button class="tool-btn" onclick="document.getElementById('langModal').style.display='flex'">
-                  <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 2C14.5 2 17 6.5 17 12C17 17.5 14.5 22 12 22C9.5 22 7 17.5 7 12C7 6.5 9.5 2 12 2Z"></path>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
                   </svg>
+                  <span id="currentLangDisplay" style="font-size: 15px; margin-left: 5px; font-weight: bold; color: var(--pink-primary);">TH</span>
               </button>
 
-              <!-- 3. ปุ่มออกจากระบบ -->
+              <!-- 3. ปุ่มออกจากระบบ (ถูกซ่อนไว้ในตอนแรก จะโชว์เมื่อล็อกอินสำเร็จ) -->
               <button class="tool-btn" id="logoutHeaderBtn" onclick="logoutSystem()" title="ออกจากระบบ" style="display: none; color: var(--apple-red); margin-left: 5px;">
                   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -457,13 +460,13 @@
       <div class="sys-modal-overlay" id="pausedModalOverlay" style="z-index: 10001;">
           <div style="background: white; border-radius: 20px; padding: 30px; width: 90%; max-width: 400px; text-align: center;">
               <div style="font-size: 40px; margin-bottom: 15px;">⏳</div>
-              <h3 style="margin-top: 0; color: #1d1d1f; font-size:22px;">อยู่ระหว่างการพักการแสดงข้อมูล</h3>
-              <p style="color: #86868b; font-size: 15px; margin-bottom: 25px;">รายการนี้กำลังถูกปิดปรับปรุงหรือพักการใช้งานชั่วคราว</p>
-              <button onclick="document.getElementById('pausedModalOverlay').style.display='none'" class="sys-btn">รับทราบ</button>
+              <h3 style="margin-top: 0; color: #1d1d1f; font-size:22px;" data-i18n="pause_title">อยู่ระหว่างการพักการแสดงข้อมูล</h3>
+              <p style="color: #86868b; font-size: 15px; margin-bottom: 25px;" data-i18n="pause_desc">รายการนี้กำลังถูกปิดปรับปรุงหรือพักการใช้งานชั่วคราว</p>
+              <button onclick="document.getElementById('pausedModalOverlay').style.display='none'" class="sys-btn" data-i18n="btn_ack">รับทราบ</button>
           </div>
       </div>
 
-      <!-- Login Box -->
+      <!-- Login Box (หน้าล็อกอินไร้กรอบเต็มจอ) -->
       <div class="system-container" id="loginBox">
         <h2 data-i18n="sys_login_title">Document System</h2>
         <p data-i18n="sys_login_desc">กรุณาระบุตัวตนเพื่อตรวจสอบสิทธิ์การเข้าถึง (Smart Login)</p>
@@ -471,27 +474,30 @@
         <div id="loginBanner" class="banner-wrapper" style="display:none;"></div>
         <div id="loginClock" style="display:none; font-size: 13px; color: var(--apple-text-muted); margin-top: -10px; margin-bottom: 20px; text-align: center;"></div>
         
-        <input type="text" id="studentId" placeholder="ระบุชื่อ หรือรหัสประจำตัว..." required autocomplete="off">
+        <input type="text" id="studentId" data-i18n-placeholder="login_placeholder" placeholder="ระบุชื่อ หรือรหัสประจำตัว..." required autocomplete="off">
         
-        <!-- ส่วน Cloudflare Turnstile -->
+        <!-- ส่วน Cloudflare Turnstile ตรวจจับบอท (คีย์ของจริง) -->
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAAEUke67A2otQ6JbL"></div>
         </div>
 
         <button class="sys-btn btn-login" onclick="checkData()" data-i18n="sys_btn_login">เข้าสู่ระบบ</button>
         
-        <p id="errorMsg" style="color: var(--apple-red); display: none; margin-top: 15px; font-weight: 500; text-align: center; font-size: 15px;">
+        <!-- ข้อความแจ้งเตือนบอทแบบกึ่งกลาง ไม่มีกรอบและอีโมจิ -->
+        <p id="errorMsg" style="color: var(--apple-red); display: none; margin-top: 15px; font-weight: 500; text-align: center; font-size: 15px;" data-i18n="bot_error">
             ระบบรักษาความปลอดภัย<br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ
         </p>
       </div>
 
-      <!-- Menu Box -->
+      <!-- Menu Box (โฟลเดอร์/ไฟล์) แบบมีกล่องขาวปกติ -->
       <div class="system-container" id="menuBox" style="display: none;">
         <div class="header-toolbar" style="margin-bottom: 15px;">
+            <!-- แก้ไขให้ flex อนุญาตให้ข้อความหดตัวและปัดบรรทัดได้ -->
             <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
                 <h3 id="menuTitle" style="margin: 0; text-align: left; word-break: break-word; white-space: normal; line-height: 1.3;"></h3>
             </div>
             
+            <!-- เมนูด้านบนขวา (แจ้งเตือน, ตารางเรียน) -->
             <div class="top-right-icons" id="mainTopIcons" style="display: none;">
               <div class="tr-icon" onclick="openCalendarModal()" title="แจ้งเตือนความจำ">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -513,6 +519,7 @@
         <div id="menuClock" style="display:none; font-size: 13px; color: var(--apple-text-muted); margin-bottom: 20px; text-align: center;"></div>
 
         <div class="header-toolbar">
+            <!-- แก้ไข Flex Box ตรงนี้เพื่อให้ข้อความยาวๆ สามารถขึ้นบรรทัดใหม่ได้ และไม่ดันหน้าจอล้น -->
             <div style="display: flex; align-items: flex-start; flex: 1; min-width: 0;">
                 <button id="navBackBtn" onclick="navigateUp()" style="display:none; background: transparent; border: none; color: var(--apple-blue); cursor: pointer; padding: 0 8px 0 0; flex-shrink: 0; margin-top: 2px;" title="ย้อนกลับ">
                     <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -524,10 +531,11 @@
             </div>
             
             <div class="search-wrapper-div">
-                <input type="text" id="searchInput" oninput="renderExplorer()" placeholder="ค้นหาเอกสาร" autocomplete="off" style="width: 100%; margin-bottom: 0; padding: 10px 40px 10px 15px; border-radius: 12px; border: 1px solid var(--apple-border); background: #fff;">
+                <input type="text" id="searchInput" oninput="renderExplorer()" data-i18n-placeholder="search_placeholder" placeholder="ค้นหาเอกสาร" autocomplete="off" style="width: 100%; margin-bottom: 0; padding: 10px 40px 10px 15px; border-radius: 12px; border: 1px solid var(--apple-border); background: #fff;">
                 <svg viewBox="0 0 24 24" width="20" height="20" stroke="#86868b" stroke-width="2" fill="none" style="position: absolute; right: 12px; pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
             
+            <!-- เมนูจัดเรียง (มีภาษา) -->
             <div class="options-btn-wrap-relative">
               <button class="options-btn" onclick="toggleOptionsMenu(event)">
                 <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -543,14 +551,14 @@
                     <span class="dropdown-icon">
                       <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
                     </span>
-                    <span class="dropdown-text">ไอคอน</span>
+                    <span class="dropdown-text" data-i18n="sort_icon">ไอคอน</span>
                 </div>
                 <div class="dropdown-item" onclick="setViewMode('list')">
                     <span class="check-icon" id="checkList" style="opacity:0">✓</span>
                      <span class="dropdown-icon">
                       <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                     </span>
-                    <span class="dropdown-text">รายการ</span>
+                    <span class="dropdown-text" data-i18n="sort_list">รายการ</span>
                 </div>
                 <div class="dropdown-item" onclick="setViewMode('tree')">
                     <span class="check-icon" id="checkTree" style="opacity:0">✓</span>
@@ -559,24 +567,24 @@
                           <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 2H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
                       </svg>
                     </span>
-                    <span class="dropdown-text">จัดเรียง</span>
+                    <span class="dropdown-text" data-i18n="sort_tree">จัดเรียง</span>
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-item" onclick="setSortMode('name')">
                     <span class="check-icon" id="checkSortName" style="opacity:0">✓</span>
-                    <span class="dropdown-text">ชื่อ<br><small id="sortNameLabel" style="font-size: 11px; color: var(--apple-text-muted); display:none;">ก ถึง ฮ</small></span>
+                    <span class="dropdown-text"><span data-i18n="sort_name">ชื่อ</span><br><small id="sortNameLabel" style="font-size: 11px; color: var(--apple-text-muted); display:none;">ก ถึง ฮ</small></span>
                 </div>
                 <div class="dropdown-item" onclick="setSortMode('type')">
                     <span class="check-icon" id="checkSortType" style="opacity:0">✓</span>
-                    <span class="dropdown-text">ประเภท</span>
+                    <span class="dropdown-text" data-i18n="sort_type">ประเภท</span>
                 </div>
                 <div class="dropdown-item" onclick="setSortMode('date')">
                     <span class="check-icon" id="checkSortDate">✓</span>
-                    <span class="dropdown-text" style="line-height: 1.2;">วันที่<br><small id="sortDateLabel" style="font-size: 11px; color: var(--apple-text-muted);">ใหม่ที่สุดถึงเก่าที่สุด</small></span>
+                    <span class="dropdown-text" style="line-height: 1.2;"><span data-i18n="sort_date">วันที่</span><br><small id="sortDateLabel" style="font-size: 11px; color: var(--apple-text-muted);">ใหม่ที่สุดถึงเก่าที่สุด</small></span>
                 </div>
                 <div class="dropdown-item" onclick="setSortMode('size')">
                     <span class="check-icon" id="checkSortSize" style="opacity:0">✓</span>
-                    <span class="dropdown-text" style="line-height: 1.2;">ขนาด<br><small id="sortSizeLabel" style="font-size: 11px; color: var(--apple-text-muted); display:none;">ใหญ่ที่สุดถึงเล็กที่สุด</small></span>
+                    <span class="dropdown-text" style="line-height: 1.2;"><span data-i18n="sort_size">ขนาด</span><br><small id="sortSizeLabel" style="font-size: 11px; color: var(--apple-text-muted); display:none;">ใหญ่ที่สุดถึงเล็กที่สุด</small></span>
                 </div>
               </div>
             </div>
@@ -605,10 +613,14 @@
   <!-- 2. View: นโยบายการคุ้มครองข้อมูลส่วนบุคคล -->
   <main id="policyView" class="view-section">
       <div class="policy-container">
+          <!-- แสดงเฉพาะคำว่า นโยบายการคุ้มครองข้อมูลส่วนบุคคล ตามคำขอ -->
           <div class="breadcrumb" data-i18n="breadcrumb">นโยบายการคุ้มครองข้อมูลส่วนบุคคล</div>
+          
           <h1 data-i18n="page_title">นโยบายการคุ้มครองข้อมูลส่วนบุคคล</h1>
           <h2 data-i18n="page_subtitle">เอกสารที่เกี่ยวข้องกับระบบแชทงานเอกสาร</h2>
-          <p style="margin-bottom: 20px; font-size:16px;">มีดังนี้</p>
+          <p style="margin-bottom: 20px; font-size:16px;" data-i18n="doc_desc">มีดังนี้</p>
+          
+          <!-- ลิงก์มีเส้นใต้สีชมพู (จุฬา Style) -->
           <ul class="document-list">
               <li><a href="#" data-i18n="doc_1">ข้อบังคับว่าด้วย การคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2563</a></li>
               <li><a href="#" data-i18n="doc_2">ประกาศเรื่อง การจัดการความปลอดภัยของข้อมูลในระบบแชท พ.ศ. 2565</a></li>
@@ -618,19 +630,23 @@
       </div>
   </main>
 
-  <!-- 3. View: คู่มือการใช้งาน -->
+  <!-- 3. View: คู่มือการใช้งาน (สอนการใช้งาน + วิดีโอ YouTube) -->
   <main id="manualView" class="view-section">
       <div class="policy-container">
           <div class="breadcrumb" data-i18n="nav_3">คู่มือการใช้งาน</div>
-          <h1>สอนการใช้งานระบบ</h1>
+          <h1 data-i18n="manual_h1">สอนการใช้งานระบบ</h1>
+          
+          <!-- กล่องข้อความอธิบายด้านบน -->
           <div style="background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.05); padding: 25px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
-              <h3 style="margin-top:0; margin-bottom: 10px; color: var(--pink-primary);">วิธีการใช้งานระบบเบื้องต้น</h3>
-              <p style="margin-bottom: 10px; font-size: 15px;">คุณสามารถแก้ไขเนื้อหาส่วนนี้ได้ในโค้ด (ใส่ตัวอย่างไว้ให้ก่อน)</p>
+              <h3 style="margin-top:0; margin-bottom: 10px; color: var(--pink-primary);" data-i18n="manual_h3">วิธีการใช้งานระบบเบื้องต้น</h3>
+              <p style="margin-bottom: 10px; font-size: 15px;" data-i18n="manual_p">คุณสามารถแก้ไขเนื้อหาส่วนนี้ได้ในโค้ด (ใส่ตัวอย่างไว้ให้ก่อน)</p>
               <ul style="padding-left: 20px; font-size: 15px; color: #555;">
-                  <li>ขั้นตอนที่ 1: เข้าสู่ระบบด้วยรหัสประจำตัว</li>
-                  <li>ขั้นตอนที่ 2: ค้นหาและดูไฟล์จากหน้าหลัก</li>
+                  <li data-i18n="manual_li1">ขั้นตอนที่ 1: เข้าสู่ระบบด้วยรหัสประจำตัว</li>
+                  <li data-i18n="manual_li2">ขั้นตอนที่ 2: ค้นหาและดูไฟล์จากหน้าหลัก</li>
               </ul>
           </div>
+
+          <!-- วิดีโอ YouTube ด้านล่าง (ใส่ลิงก์ของคุณที่ src="..." ได้เลย) -->
           <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
               <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="สอนการใช้งานระบบ" allowfullscreen></iframe>
           </div>
@@ -640,20 +656,22 @@
   <!-- ================== FOOTER ================== -->
   <footer id="footerArea">
       <div class="footer-grid">
+          <!-- คอลัมน์ที่ 1: เกี่ยวกับระบบ -->
           <div class="footer-col">
               <h3 data-i18n="footer_col1">เกี่ยวกับระบบ</h3>
               <ul>
-                  <li><a href="#" onclick="openInfoModal('แนะนำระบบ', '<p>เนื้อหาแนะนำระบบ (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link1">แนะนำระบบ</a></li>
-                  <li><a href="#" onclick="openInfoModal('ความปลอดภัย', '<p>เนื้อหาความปลอดภัย (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link2">ความปลอดภัย</a></li>
-                  <li><a href="#" onclick="openInfoModal('โครงสร้างระบบ', '<p>เนื้อหาโครงสร้างระบบ (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link3">โครงสร้างระบบ</a></li>
+                  <!-- คลิกลิงก์เพื่อเปิด Pop-up ข้อความ -->
+                  <li><a href="#" onclick="openInfoModal(t('f_link1'), '<p>เนื้อหาแนะนำระบบ (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link1">แนะนำระบบ</a></li>
+                  <li><a href="#" onclick="openInfoModal(t('f_link2'), '<p>เนื้อหาความปลอดภัย (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link2">ความปลอดภัย</a></li>
+                  <li><a href="#" onclick="openInfoModal(t('f_link3'), '<p>เนื้อหาโครงสร้างระบบ (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link3">โครงสร้างระบบ</a></li>
               </ul>
           </div>
+          
+          <!-- คอลัมน์ที่ 2: ติดต่อเรา -->
           <div class="footer-col">
               <h3 data-i18n="footer_col3">ติดต่อเรา</h3>
               <ul style="color: #bbb; font-size: 14px; line-height: 2;">
-                  <li data-i18n="f_address">123 ถนนตัวอย่าง แขวงทดสอบ<br>เขตระบบงาน กรุงเทพมหานคร 10000</li>
-                  <li>โทรศัพท์: 02-xxx-xxxx</li>
-                  <li>อีเมล: support@docsystem.com</li>
+                  <li data-i18n="f_address">123 ถนนตัวอย่าง แขวงทดสอบ<br>เขตระบบงาน กรุงเทพมหานคร 10000<br>โทรศัพท์: 02-xxx-xxxx<br>อีเมล: support@docsystem.com</li>
               </ul>
           </div>
       </div>
@@ -669,14 +687,19 @@
   </footer>
 
   <!-- ================== MODALS (UI ทั่วไป) ================== -->
+  
+  <!-- Info Modal (แสดงข้อมูลจาก Footer) -->
   <div class="ui-modal" id="infoModal">
       <div class="ui-modal-content" style="max-width: 600px;">
           <button class="ui-close-btn" onclick="document.getElementById('infoModal').style.display='none'">&times;</button>
           <h3 id="infoModalTitle" style="color: var(--pink-primary); border-bottom: 2px solid #eee; padding-bottom: 10px;">หัวข้อ</h3>
-          <div id="infoModalContent" style="font-size: 16px; color: #444; line-height: 1.6; word-break: break-word; margin-top: 15px;"></div>
+          <div id="infoModalContent" style="font-size: 16px; color: #444; line-height: 1.6; word-break: break-word; margin-top: 15px;">
+              <!-- ข้อความจะถูกแทรกที่นี่ -->
+          </div>
       </div>
   </div>
 
+  <!-- Cookie Pop-up -->
   <div class="cookie-popup" id="cookieNotice">
       <h4 data-i18n="cookie_notice_title">คุกกี้บนเว็บไซต์นี้</h4>
       <p data-i18n="cookie_notice_desc">เราใช้คุกกี้ที่จำเป็นเพื่อให้เว็บไซต์และระบบทำงานได้อย่างราบรื่น</p>
@@ -686,11 +709,13 @@
       </div>
   </div>
 
+  <!-- Modal ตั้งค่าคุกกี้ -->
   <div class="ui-modal" id="cookieSettingsModal">
       <div class="ui-modal-content">
           <button class="ui-close-btn" onclick="document.getElementById('cookieSettingsModal').style.display='none'">&times;</button>
           <h3 data-i18n="cookie_title">การตั้งค่าคุกกี้</h3>
           <p data-i18n="cookie_desc">คุณสามารถเลือกเปิดหรือปิดการใช้งานคุกกี้แต่ละประเภทได้ตามความต้องการ</p>
+          
           <div class="cookie-option">
               <div class="cookie-text">
                   <strong data-i18n="cookie_req_title">คุกกี้ที่จำเป็นอย่างยิ่ง</strong>
@@ -705,6 +730,7 @@
               </div>
               <label class="toggle-switch"><input type="checkbox" id="analyticsCookie" checked><span class="toggle-slider"></span></label>
           </div>
+
           <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
               <button class="btn-cookie btn-settings" onclick="document.getElementById('cookieSettingsModal').style.display='none'" data-i18n="btn_cancel">ยกเลิก</button>
               <button class="btn-cookie btn-accept" onclick="saveCookieSettings()" data-i18n="btn_save">บันทึกการตั้งค่า</button>
@@ -712,7 +738,7 @@
       </div>
   </div>
 
-  <!-- Modal เปลี่ยนภาษา พร้อมอัปเดตการแสดงผลไฟล์อัตโนมัติ -->
+  <!-- Modal เปลี่ยนภาษา -->
   <div class="ui-modal" id="langModal">
       <div class="ui-modal-content" style="max-width: 350px;">
           <button class="ui-close-btn" onclick="document.getElementById('langModal').style.display='none'">&times;</button>
@@ -725,6 +751,7 @@
       </div>
   </div>
 
+  <!-- Modal ตัวช่วยการเข้าถึง (Aa) -->
   <div class="ui-modal" id="accessModal">
       <div class="ui-modal-content" style="max-width: 380px;">
           <button class="ui-close-btn" onclick="document.getElementById('accessModal').style.display='none'">&times;</button>
@@ -744,11 +771,12 @@
       </div>
   </div>
 
+  <!-- Modal รหัสผ่านแบบ Custom (แทนที่ prompt เบราว์เซอร์) -->
   <div class="ui-modal" id="passwordModal" style="z-index: 10002;">
       <div class="ui-modal-content" style="max-width: 350px; text-align: center; padding: 25px;">
           <h3 style="color: #1d1d1f; margin-bottom: 10px; font-size: 20px;" data-i18n="pwd_title">กรุณาใส่รหัสผ่าน</h3>
           <p id="passwordModalMsg" style="font-size: 14px; color: #86868b; margin-bottom: 20px;">โฟลเดอร์หรือเอกสารนี้ถูกล็อก</p>
-          <input type="password" id="passwordModalInput" placeholder="รหัสผ่าน">
+          <input type="password" id="passwordModalInput" data-i18n-placeholder="pwd_placeholder" placeholder="รหัสผ่าน">
           <div style="display: flex; gap: 10px; justify-content: center;">
               <button class="sys-btn" style="background: #e5e5ea; color: #1d1d1f; flex: 1; margin-bottom: 0;" onclick="passwordModalCancel()" data-i18n="btn_cancel">ยกเลิก</button>
               <button class="sys-btn" style="background: var(--pink-primary); flex: 1; margin-bottom: 0;" onclick="passwordModalSubmit()" data-i18n="btn_confirm">ตกลง</button>
@@ -756,8 +784,11 @@
       </div>
   </div>
 
+  <!-- Toast Notification สำหรับแจ้งเตือน (แทน alert) -->
   <div id="toast"></div>
 
+
+  <!-- ================== MODALS (ของ Firebase DocumentSystem) ================== -->
   <!-- Calendar Modal -->
   <div class="sys-modal-overlay" id="calendarModalOverlay">
     <div class="calendar-modal">
@@ -765,8 +796,8 @@
             <div style="display: flex; align-items: center;">
                 <h2 id="calendarMonthTitle" style="color:#000;">กรกฎาคม 2569</h2>
                 <div class="calendar-nav">
-                    <button onclick="prevMonth()"><svg viewBox="0 0 24 24" width="18" height="18" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
-                    <button onclick="nextMonth()"><svg viewBox="0 0 24 24" width="18" height="18" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                    <button onclick="prevMonth()" title="เดือนก่อนหน้า"><svg viewBox="0 0 24 24" width="18" height="18" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                    <button onclick="nextMonth()" title="เดือนถัดไป"><svg viewBox="0 0 24 24" width="18" height="18" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                     <button onclick="currentMonth()" style="width: auto; padding: 0 12px; font-size: 13px; border-radius: 12px;">วันนี้</button>
                 </div>
             </div>
@@ -776,6 +807,7 @@
     </div>
   </div>
 
+  <!-- Event Detail Modal -->
   <div class="sys-modal-overlay" id="eventDetailOverlay">
     <div class="event-detail-modal">
         <button class="sys-close-btn" style="position: absolute; top: 15px; right: 15px;" onclick="closeEventDetail()">×</button>
@@ -793,6 +825,7 @@
     </div>
   </div>
 
+  <!-- Schedule Modal -->
   <div class="sys-modal-overlay" id="scheduleModalOverlay">
     <div class="schedule-modal">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -802,6 +835,7 @@
         <div id="scheduleContent" style="text-align: center; margin-top: 10px;"></div>
     </div>
   </div>
+
 
   <!-- ================== JAVASCRIPT ================== -->
   <script type="module">
@@ -870,28 +904,176 @@
         return svg;
     }
 
+    // =====================================
+    // ระบบการแปล 3 ภาษา 
+    // =====================================
+    const translations = {
+        TH: {
+            logo: "ระบบเอกสาร", nav_1: "ระบบเอกสาร", nav_2: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", nav_3: "คู่มือการใช้งาน", nav_4: "ติดต่อเรา",
+            breadcrumb: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", page_title: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", page_subtitle: "เอกสารที่เกี่ยวข้องกับระบบแชทงานเอกสาร", doc_desc: "มีดังนี้",
+            doc_1: "ข้อบังคับว่าด้วย การคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2563", doc_2: "ประกาศเรื่อง การจัดการความปลอดภัยของข้อมูลในระบบแชท พ.ศ. 2565", doc_3: "พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA)", doc_4: "คู่มือการอัปโหลดและแชร์เอกสารภายในองค์กร",
+            footer_col1: "เกี่ยวกับระบบ", f_link1: "แนะนำระบบ", f_link2: "ความปลอดภัย", f_link3: "โครงสร้างระบบ",
+            footer_col3: "ติดต่อเรา", f_address: "123 ถนนตัวอย่าง แขวงทดสอบ<br>เขตระบบงาน กรุงเทพมหานคร 10000<br>โทรศัพท์: 02-xxx-xxxx<br>อีเมล: support@docsystem.com",
+            legal_1: "การเปิดเผยข้อมูล", legal_2: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", btn_reset: "รีเซ็ตค่าคุกกี้ (สำหรับทดสอบ)",
+            lang_title: "ภาษา", access_title: "ตัวช่วยการเข้าถึง", access_font: "ขนาดตัวอักษร", access_contrast: "โหมดสีตัดกันสูง",
+            cookie_notice_title: "คุกกี้บนเว็บไซต์นี้", cookie_notice_desc: "เราใช้คุกกี้ที่จำเป็นเพื่อให้เว็บไซต์และระบบแชทงานเอกสารทำงานได้อย่างราบรื่น",
+            cookie_btn_settings: "ตั้งค่าคุกกี้", cookie_btn_accept: "ยอมรับทั้งหมด", cookie_title: "การตั้งค่าคุกกี้", cookie_desc: "คุณสามารถเลือกเปิดหรือปิดการใช้งานคุกกี้แต่ละประเภทได้",
+            cookie_req_title: "คุกกี้ที่จำเป็นอย่างยิ่ง", cookie_req_desc: "จำเป็นสำหรับการทำงานพื้นฐานของระบบ ปิดไม่ได้", cookie_stat_title: "คุกกี้เพื่อการวิเคราะห์", cookie_stat_desc: "ช่วยให้เราเข้าใจการใช้งานของคุณเพื่อพัฒนาให้ดีขึ้น",
+            btn_cancel: "ยกเลิก", btn_save: "บันทึกการตั้งค่า", btn_confirm: "ตกลง", btn_ack: "รับทราบ",
+            pwd_title: "กรุณาใส่รหัสผ่าน",
+            sys_login_title: "Document System", sys_login_desc: "กรุณาระบุตัวตนเพื่อตรวจสอบสิทธิ์การเข้าถึง (Smart Login)", sys_btn_login: "เข้าสู่ระบบ", sys_menu_subtitle: "กรุณาเลือกรายการที่คุณต้องการเข้าชม", sys_path_home: "หน้าหลัก",
+            pause_title: "อยู่ระหว่างการพักการแสดงข้อมูล", pause_desc: "รายการนี้กำลังถูกปิดปรับปรุงหรือพักการใช้งานชั่วคราว", bot_error: "ระบบรักษาความปลอดภัย<br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ",
+            manual_h1: "สอนการใช้งานระบบ", manual_h3: "วิธีการใช้งานระบบเบื้องต้น", manual_p: "คุณสามารถแก้ไขเนื้อหาส่วนนี้ได้ในโค้ด (ใส่ตัวอย่างไว้ให้ก่อน)", manual_li1: "ขั้นตอนที่ 1: เข้าสู่ระบบด้วยรหัสประจำตัว", manual_li2: "ขั้นตอนที่ 2: ค้นหาและดูไฟล์จากหน้าหลัก",
+            // Strings from the images requested:
+            login_placeholder: "ระบุชื่อ หรือรหัสประจำตัว...",
+            search_placeholder: "ค้นหาเอกสาร",
+            pwd_placeholder: "รหัสผ่าน",
+            user_id: "รหัสผู้ใช้งาน:",
+            sort_icon: "ไอคอน", sort_list: "รายการ", sort_tree: "จัดเรียง", sort_name: "ชื่อ", sort_type: "ประเภท", sort_date: "วันที่", sort_size: "ขนาด",
+            sort_name_asc: "ก ถึง ฮ", sort_name_desc: "ฮ ถึง ก", sort_date_asc: "เก่าที่สุดถึงใหม่ที่สุด", sort_date_desc: "ใหม่ที่สุดถึงเก่าที่สุด", sort_size_asc: "เล็กที่สุดถึงใหญ่ที่สุด", sort_size_desc: "ใหญ่ที่สุดถึงเล็กที่สุด",
+            locked: "ติดรหัสผ่าน", prompt_folder_lock: "โฟลเดอร์นี้ถูกล็อก กรุณาใส่รหัสผ่าน:", prompt_file_lock: "เอกสารนี้ถูกล็อก กรุณาใส่รหัสผ่าน:", wrong_pwd: "รหัสผ่านไม่ถูกต้อง",
+            empty_search: "ไม่พบเอกสารที่ค้นหา", empty_folder: "ไม่มีเอกสารในโฟลเดอร์นี้", empty_data: "ไม่พบข้อมูล"
+        },
+        EN: {
+            logo: "Doc System", nav_1: "System", nav_2: "Privacy Policy", nav_3: "Manual", nav_4: "Contact",
+            breadcrumb: "Privacy Policy", page_title: "Privacy Policy", page_subtitle: "Documents related to Document Chat System", doc_desc: "As follows:",
+            doc_1: "Personal Data Protection Regulation B.E. 2563", doc_2: "Announcement on Chat System Data Security B.E. 2565", doc_3: "Personal Data Protection Act B.E. 2562 (PDPA)", doc_4: "Internal Document Upload and Sharing Manual",
+            footer_col1: "About", f_link1: "Intro", f_link2: "Security", f_link3: "Architecture",
+            footer_col3: "Contact", f_address: "123 Sample Rd, Bangkok 10000<br>Phone: 02-xxx-xxxx<br>Email: support@docsystem.com",
+            legal_1: "Data Disclosure", legal_2: "Privacy Policy", btn_reset: "Reset Cookies",
+            lang_title: "Language", access_title: "Accessibility", access_font: "Font Size", access_contrast: "High Contrast",
+            cookie_notice_title: "Cookies", cookie_notice_desc: "We use cookies to ensure our website runs smoothly.",
+            cookie_btn_settings: "Cookie Settings", cookie_btn_accept: "Accept All", cookie_title: "Cookie Settings", cookie_desc: "Enable or disable specific cookies.",
+            cookie_req_title: "Strictly Necessary", cookie_req_desc: "Required for the system to function.", cookie_stat_title: "Analytics", cookie_stat_desc: "Helps us improve the system.",
+            btn_cancel: "Cancel", btn_save: "Save", btn_confirm: "Confirm", btn_ack: "Acknowledge",
+            pwd_title: "Enter Password",
+            sys_login_title: "Document System", sys_login_desc: "Please identify yourself to verify access (Smart Login)", sys_btn_login: "Login", sys_menu_subtitle: "Please select the item you want to view", sys_path_home: "Home",
+            pause_title: "Information Paused", pause_desc: "This item is currently under maintenance or temporarily paused.", bot_error: "Security System<br>Please verify you are human.",
+            manual_h1: "System Manual", manual_h3: "Basic Usage", manual_p: "You can edit this content in the code.", manual_li1: "Step 1: Login with your ID", manual_li2: "Step 2: Search and view files from home page",
+            // Strings from the images requested:
+            login_placeholder: "Enter name or ID...",
+            search_placeholder: "Search documents",
+            pwd_placeholder: "Password",
+            user_id: "User ID:",
+            sort_icon: "Icons", sort_list: "List", sort_tree: "Tree", sort_name: "Name", sort_type: "Type", sort_date: "Date", sort_size: "Size",
+            sort_name_asc: "A to Z", sort_name_desc: "Z to A", sort_date_asc: "Oldest to Newest", sort_date_desc: "Newest to Oldest", sort_size_asc: "Smallest to Largest", sort_size_desc: "Largest to Smallest",
+            locked: "Locked", prompt_folder_lock: "This folder is locked. Please enter password:", prompt_file_lock: "This document is locked. Please enter password:", wrong_pwd: "Incorrect password",
+            empty_search: "No documents found", empty_folder: "No documents in this folder", empty_data: "No data"
+        },
+        CN: {
+            logo: "文件系统", nav_1: "系统", nav_2: "隐私政策", nav_3: "手册", nav_4: "联系我们",
+            breadcrumb: "隐私政策", page_title: "隐私政策", page_subtitle: "与文件聊天系统相关的文件", doc_desc: "如下：",
+            doc_1: "个人数据保护条例 2020", doc_2: "聊天系统数据安全管理公告 2022", doc_3: "个人数据保护法 2019 (PDPA)", doc_4: "内部文件上传与共享手册",
+            footer_col1: "关于", f_link1: "介绍", f_link2: "安全", f_link3: "结构",
+            footer_col3: "联系方式", f_address: "曼谷 样本路 123号 10000<br>电话: 02-xxx-xxxx<br>电邮: support@docsystem.com",
+            legal_1: "数据披露", legal_2: "隐私政策", btn_reset: "重置 Cookie",
+            lang_title: "语言", access_title: "无障碍", access_font: "字体大小", access_contrast: "高对比度",
+            cookie_notice_title: "Cookie", cookie_notice_desc: "我们使用 Cookie 以确保网站顺利运行。",
+            cookie_btn_settings: "Cookie 设置", cookie_btn_accept: "全部接受", cookie_title: "Cookie 设置", cookie_desc: "启用或禁用特定的 Cookie。",
+            cookie_req_title: "绝对必要", cookie_req_desc: "系统运行所必需。", cookie_stat_title: "分析", cookie_stat_desc: "帮助我们改进系统。",
+            btn_cancel: "取消", btn_save: "保存", btn_confirm: "确认", btn_ack: "知道",
+            pwd_title: "输入密码",
+            sys_login_title: "Document System", sys_login_desc: "请确认您的身份以验证访问权限 (Smart Login)", sys_btn_login: "登录", sys_menu_subtitle: "请选择您要查看的项目", sys_path_home: "首页",
+            pause_title: "信息已暂停", pause_desc: "该项目当前正在维护或暂停使用。", bot_error: "安全系统<br>请验证您不是机器人。",
+            manual_h1: "系统手册", manual_h3: "基本使用方法", manual_p: "您可以在代码中编辑此内容。", manual_li1: "第一步：使用您的ID登录", manual_li2: "第二步：在首页搜索并查看文件",
+            // Strings from the images requested:
+            login_placeholder: "输入姓名或身份证号...",
+            search_placeholder: "搜索文件",
+            pwd_placeholder: "密码",
+            user_id: "用户ID:",
+            sort_icon: "图标", sort_list: "列表", sort_tree: "树状", sort_name: "名称", sort_type: "类型", sort_date: "日期", sort_size: "大小",
+            sort_name_asc: "A 到 Z", sort_name_desc: "Z 到 A", sort_date_asc: "从旧到新", sort_date_desc: "从新到旧", sort_size_asc: "从小到大", sort_size_desc: "从大到小",
+            locked: "受密码保护", prompt_folder_lock: "此文件夹已被锁定。请输入密码：", prompt_file_lock: "此文件已被锁定。请输入密码：", wrong_pwd: "密码错误",
+            empty_search: "未找到搜索的文件", empty_folder: "此文件夹中没有文件", empty_data: "没有数据"
+        }
+    };
+
+    window.t = function(key) {
+        const lang = localStorage.getItem('docSystem_lang') || 'TH';
+        return translations[lang][key] || key;
+    }
+
+    window.changeLang = function(langCode) {
+        localStorage.setItem('docSystem_lang', langCode);
+        document.documentElement.lang = langCode.toLowerCase(); // ปรับภาษา HTML
+        
+        document.querySelectorAll('#langModal .option-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.getElementById('btnLang' + langCode);
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        // Update InnerHTML 
+        document.querySelectorAll('[data-i18n]').forEach(elem => {
+            const key = elem.getAttribute('data-i18n');
+            if(translations[langCode] && translations[langCode][key]) {
+                elem.innerHTML = translations[langCode][key];
+            }
+        });
+        
+        // Update Placeholders
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(elem => {
+            const key = elem.getAttribute('data-i18n-placeholder');
+            if(translations[langCode] && translations[langCode][key]) {
+                elem.setAttribute('placeholder', translations[langCode][key]);
+            }
+        });
+
+        // Update Text indicator in header
+        document.getElementById('currentLangDisplay').innerText = langCode;
+
+        // อัปเดตข้อมูลภาษาแบบ Dynamic (เวลา, จัดเรียง, ไอคอน ฯลฯ)
+        updateRealtimeClock();
+        setSortMode(appSortMode);
+        if (currentId) {
+            document.getElementById("menuTitle").innerText = `${t('user_id')} ${currentId}`;
+        }
+        if (document.getElementById("menuBox").style.display !== "none") {
+            renderExplorer();
+        }
+        
+        document.getElementById('langModal').style.display = 'none';
+    }
+
     function formatTime(timestamp) {
         if (!timestamp) return "";
         try {
             const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const lang = localStorage.getItem('docSystem_lang') || 'TH';
+            if (lang === 'EN') {
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            } else if (lang === 'CN') {
+                return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            }
             return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + " น.";
         } catch(e) { return ""; }
     }
 
-    // ฟังก์ชันช่วยแสดงชื่อ 3 ภาษา (ดึงภาษาที่กำลังใช้งานมาพิจารณา)
-    function getLocalizedName(defaultName, metaObj) {
+    function updateRealtimeClock() {
+        const now = new Date();
         const lang = localStorage.getItem('docSystem_lang') || 'TH';
-        if (!metaObj) return defaultName;
-        if (lang === 'EN' && metaObj.titleEN) return metaObj.titleEN;
-        if (lang === 'CN' && metaObj.titleCN) return metaObj.titleCN;
-        return defaultName;
+        let timeString = '';
+        
+        const hrs = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+
+        if (lang === 'EN') {
+            const daysEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const monthsEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            timeString = `Data as of ${daysEn[now.getDay()]}, ${monthsEn[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()} at ${hrs}:${mins}`;
+        } else if (lang === 'CN') {
+            const daysCn = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            timeString = `截至 ${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${daysCn[now.getDay()]} ${hrs}:${mins}`;
+        } else {
+            const daysTh = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+            const monthsTh = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+            timeString = `ข้อมูล ณ วัน${daysTh[now.getDay()]} ที่ ${now.getDate()} เดือน${monthsTh[now.getMonth()]} พ.ศ.${now.getFullYear() + 543} เวลา ${hrs}:${mins} น.`;
+        }
+        
+        const loginClock = document.getElementById('loginClock');
+        const menuClock = document.getElementById('menuClock');
+        if (loginClock && loginClock.style.display !== "none") loginClock.innerText = timeString;
+        if (menuClock && menuClock.style.display !== "none") menuClock.innerText = timeString;
     }
-    function getLocalizedFileTitle(file) {
-        const lang = localStorage.getItem('docSystem_lang') || 'TH';
-        if (lang === 'EN' && file.titleEN) return file.titleEN;
-        if (lang === 'CN' && file.titleCN) return file.titleCN;
-        return file.title || '-';
-    }
+    setInterval(updateRealtimeClock, 1000); 
 
     window.toggleOptionsMenu = function(e) {
       e.stopPropagation();
@@ -928,11 +1110,20 @@
       document.getElementById("checkSortSize").style.opacity = mode === 'size' ? "1" : "0";
       
       const nameLabel = document.getElementById("sortNameLabel");
-      if(nameLabel) { nameLabel.style.display = mode === 'name' ? "block" : "none"; nameLabel.innerText = sortDesc ? "ฮ ถึง ก" : "ก ถึง ฮ"; }
+      if(nameLabel) { 
+          nameLabel.style.display = mode === 'name' ? "block" : "none"; 
+          nameLabel.innerText = sortDesc ? t('sort_name_desc') : t('sort_name_asc'); 
+      }
       const dateLabel = document.getElementById("sortDateLabel");
-      if(dateLabel) { dateLabel.style.display = mode === 'date' ? "block" : "none"; dateLabel.innerText = sortDesc ? "ใหม่ที่สุดถึงเก่าที่สุด" : "เก่าที่สุดถึงใหม่ที่สุด"; }
+      if(dateLabel) { 
+          dateLabel.style.display = mode === 'date' ? "block" : "none"; 
+          dateLabel.innerText = sortDesc ? t('sort_date_desc') : t('sort_date_asc'); 
+      }
       const sizeLabel = document.getElementById("sortSizeLabel");
-      if(sizeLabel) { sizeLabel.style.display = mode === 'size' ? "block" : "none"; sizeLabel.innerText = sortDesc ? "ใหญ่ที่สุดถึงเล็กที่สุด" : "เล็กที่สุดถึงใหญ่ที่สุด"; }
+      if(sizeLabel) { 
+          sizeLabel.style.display = mode === 'size' ? "block" : "none"; 
+          sizeLabel.innerText = sortDesc ? t('sort_size_desc') : t('sort_size_asc'); 
+      }
       
       renderExplorer(); document.getElementById("optionsMenu").style.display = "none";
     }
@@ -977,20 +1168,10 @@
         } catch(e) { console.error("โหลดแบนเนอร์ล้มเหลว", e); }
     }
     initBanners();
-    
-    function updateRealtimeClock() {
-        const now = new Date();
-        const daysTh = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
-        const monthsTh = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
-        const timeString = `ข้อมูล ณ วัน${daysTh[now.getDay()]} ที่ ${now.getDate()} เดือน${monthsTh[now.getMonth()]} พ.ศ.${now.getFullYear() + 543} เวลา ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} น.`;
-        
-        const loginClock = document.getElementById('loginClock');
-        const menuClock = document.getElementById('menuClock');
-        if (loginClock && loginClock.style.display !== "none") loginClock.innerText = timeString;
-        if (menuClock && menuClock.style.display !== "none") menuClock.innerText = timeString;
-    }
-    setInterval(updateRealtimeClock, 1000); updateRealtimeClock();
 
+    // ----------------------------------------------------
+    // UI ควบคุมแท็บ, ภาษา, คุกกี้, Scroll, Info Modal
+    // ----------------------------------------------------
     window.switchTab = function(tabId, el) {
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
@@ -1089,68 +1270,6 @@
         location.reload();
     }
 
-    const translations = {
-        TH: {
-            logo: "ระบบเอกสาร", nav_1: "ระบบเอกสาร", nav_2: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", nav_3: "คู่มือการใช้งาน", nav_4: "ติดต่อเรา",
-            breadcrumb: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", page_title: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", page_subtitle: "เอกสารที่เกี่ยวข้องกับระบบแชทงานเอกสาร", doc_desc: "มีดังนี้",
-            doc_1: "ข้อบังคับว่าด้วย การคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2563", doc_2: "ประกาศเรื่อง การจัดการความปลอดภัยของข้อมูลในระบบแชท พ.ศ. 2565", doc_3: "พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA)", doc_4: "คู่มือการอัปโหลดและแชร์เอกสารภายในองค์กร",
-            footer_col1: "เกี่ยวกับระบบ", f_link1: "แนะนำระบบ", f_link2: "ความปลอดภัย", f_link3: "โครงสร้างระบบ",
-            footer_col3: "ติดต่อเรา", f_address: "123 ถนนตัวอย่าง แขวงทดสอบ<br>เขตระบบงาน กรุงเทพมหานคร 10000",
-            legal_1: "การเปิดเผยข้อมูล", legal_2: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", btn_reset: "รีเซ็ตค่าคุกกี้ (สำหรับทดสอบ)",
-            lang_title: "ภาษา", access_title: "ตัวช่วยการเข้าถึง", access_font: "ขนาดตัวอักษร", access_contrast: "โหมดสีตัดกันสูง",
-            cookie_notice_title: "คุกกี้บนเว็บไซต์นี้", cookie_notice_desc: "เราใช้คุกกี้ที่จำเป็นเพื่อให้เว็บไซต์และระบบแชทงานเอกสารทำงานได้อย่างราบรื่น",
-            cookie_btn_settings: "ตั้งค่าคุกกี้", cookie_btn_accept: "ยอมรับทั้งหมด", cookie_title: "การตั้งค่าคุกกี้", cookie_desc: "คุณสามารถเลือกเปิดหรือปิดการใช้งานคุกกี้แต่ละประเภทได้",
-            cookie_req_title: "คุกกี้ที่จำเป็นอย่างยิ่ง", cookie_req_desc: "จำเป็นสำหรับการทำงานพื้นฐานของระบบ ปิดไม่ได้", cookie_stat_title: "คุกกี้เพื่อการวิเคราะห์", cookie_stat_desc: "ช่วยให้เราเข้าใจการใช้งานของคุณเพื่อพัฒนาให้ดีขึ้น",
-            btn_cancel: "ยกเลิก", btn_save: "บันทึกการตั้งค่า", btn_confirm: "ตกลง", pwd_title: "กรุณาใส่รหัสผ่าน",
-            sys_login_title: "Document System", sys_login_desc: "กรุณาระบุตัวตนเพื่อตรวจสอบสิทธิ์การเข้าถึง (Smart Login)", sys_btn_login: "เข้าสู่ระบบ", sys_menu_subtitle: "กรุณาเลือกรายการที่คุณต้องการเข้าชม", sys_path_home: "หน้าหลัก"
-        },
-        EN: {
-            logo: "Doc System", nav_1: "System", nav_2: "Privacy Policy", nav_3: "Manual", nav_4: "Contact",
-            breadcrumb: "Privacy Policy", page_title: "Privacy Policy", page_subtitle: "Documents related to Document Chat System", doc_desc: "As follows:",
-            doc_1: "Personal Data Protection Regulation B.E. 2563", doc_2: "Announcement on Chat System Data Security B.E. 2565", doc_3: "Personal Data Protection Act B.E. 2562 (PDPA)", doc_4: "Internal Document Upload and Sharing Manual",
-            footer_col1: "About", f_link1: "Intro", f_link2: "Security", f_link3: "Architecture",
-            footer_col3: "Contact", f_address: "123 Sample Rd, Bangkok 10000",
-            legal_1: "Data Disclosure", legal_2: "Privacy Policy", btn_reset: "Reset Cookies",
-            lang_title: "Language", access_title: "Accessibility", access_font: "Font Size", access_contrast: "High Contrast",
-            cookie_notice_title: "Cookies", cookie_notice_desc: "We use cookies to ensure our website runs smoothly.",
-            cookie_btn_settings: "Cookie Settings", cookie_btn_accept: "Accept All", cookie_title: "Cookie Settings", cookie_desc: "Enable or disable specific cookies.",
-            cookie_req_title: "Strictly Necessary", cookie_req_desc: "Required for the system to function.", cookie_stat_title: "Analytics", cookie_stat_desc: "Helps us improve the system.",
-            btn_cancel: "Cancel", btn_save: "Save", btn_confirm: "Confirm", pwd_title: "Enter Password",
-            sys_login_title: "Document System", sys_login_desc: "Please identify yourself to verify access (Smart Login)", sys_btn_login: "Login", sys_menu_subtitle: "Please select the item you want to view", sys_path_home: "Home"
-        },
-        CN: {
-            logo: "文件系统", nav_1: "系统", nav_2: "隐私政策", nav_3: "手册", nav_4: "联系我们",
-            breadcrumb: "隐私政策", page_title: "隐私政策", page_subtitle: "与文件聊天系统相关的文件", doc_desc: "如下：",
-            doc_1: "个人数据保护条例 2020", doc_2: "聊天系统数据安全管理公告 2022", doc_3: "个人数据保护法 2019 (PDPA)", doc_4: "内部文件上传与共享手册",
-            footer_col1: "关于", f_link1: "介绍", f_link2: "安全", f_link3: "结构",
-            footer_col3: "联系方式", f_address: "曼谷 样本路 123号 10000",
-            legal_1: "数据披露", legal_2: "隐私政策", btn_reset: "重置 Cookie",
-            lang_title: "语言", access_title: "无障碍", access_font: "字体大小", access_contrast: "高对比度",
-            cookie_notice_title: "Cookie", cookie_notice_desc: "我们使用 Cookie 以确保网站顺利运行。",
-            cookie_btn_settings: "Cookie 设置", cookie_btn_accept: "全部接受", cookie_title: "Cookie 设置", cookie_desc: "启用或禁用特定的 Cookie。",
-            cookie_req_title: "绝对必要", cookie_req_desc: "系统运行所必需。", cookie_stat_title: "分析", cookie_stat_desc: "帮助我们改进系统。",
-            btn_cancel: "取消", btn_save: "保存", btn_confirm: "确认", pwd_title: "输入密码",
-            sys_login_title: "Document System", sys_login_desc: "请确认您的身份以验证访问权限 (Smart Login)", sys_btn_login: "登录", sys_menu_subtitle: "请选择您要查看的项目", sys_path_home: "首页"
-        }
-    };
-
-    window.changeLang = function(langCode) {
-        localStorage.setItem('docSystem_lang', langCode);
-        document.querySelectorAll('#langModal .option-btn').forEach(b => b.classList.remove('active'));
-        const activeBtn = document.getElementById('btnLang' + langCode);
-        if (activeBtn) activeBtn.classList.add('active');
-        
-        document.querySelectorAll('[data-i18n]').forEach(elem => {
-            const key = elem.getAttribute('data-i18n');
-            if(translations[langCode] && translations[langCode][key]) elem.innerHTML = translations[langCode][key];
-        });
-        document.getElementById('langModal').style.display = 'none';
-        
-        if(document.getElementById('menuBox').style.display === 'block') {
-            renderExplorer();
-        }
-    }
-
     // ----------------------------------------------------
     // โค้ดส่วนระบบ DocumentSystem Firebase
     // ----------------------------------------------------
@@ -1162,7 +1281,7 @@
       } else {
           const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
           if (turnstileResponse && !turnstileResponse.value) {
-              document.getElementById("errorMsg").innerHTML = "ระบบรักษาความปลอดภัย<br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ";
+              document.getElementById("errorMsg").innerHTML = t('bot_error');
               document.getElementById("errorMsg").style.display = "block";
               return;
           }
@@ -1209,9 +1328,7 @@
               const data = docSnap.data();
               let path = (data.folder || "").trim().replace(/^\/+|\/+$/g, '');
               folderMeta[path] = { 
-                  color: data.color || 'blue', emoji: data.emoji || '', password: data.password || '', isPaused: data.isPaused || false, 
-                  titleEN: data.titleEN || '', titleCN: data.titleCN || '',
-                  updatedAt: data.updatedAt || data.createdAt || null 
+                  color: data.color || 'blue', emoji: data.emoji || '', password: data.password || '', isPaused: data.isPaused || false, titleEN: data.titleEN || '', titleCN: data.titleCN || '', updatedAt: data.updatedAt || data.createdAt || null 
               };
           });
           
@@ -1233,9 +1350,9 @@
 
           document.getElementById("loginBox").style.display = "none";
           document.getElementById("menuBox").style.display = "block";
-          document.getElementById("menuTitle").innerText = `รหัสผู้ใช้งาน: ${currentId}`;
+          document.getElementById("menuTitle").innerText = `${t('user_id')} ${currentId}`;
           document.getElementById("mainTopIcons").style.display = "flex";
-          document.getElementById("logoutHeaderBtn").style.display = "flex"; 
+          document.getElementById("logoutHeaderBtn").style.display = "flex";
           updateReminderBadge();
 
           currentPath = ""; renderExplorer();
@@ -1255,6 +1372,9 @@
       }
     }
 
+    // ----------------------------------------------------
+    // ฟังก์ชันย่อยของระบบเอกสาร (ดึงมาจากต้นฉบับ 100%)
+    // ----------------------------------------------------
     window.updateReminderBadge = function() {
         const badge = document.getElementById("reminderBadgeCount");
         const pendingCount = userReminders.filter(r => r.status !== 'Complete').length;
@@ -1444,14 +1564,28 @@
         if (!pwd) return;
         if (!unlockedItems.has(folderPath)) {
             e.preventDefault(); 
-            let input = await showPasswordPrompt("โฟลเดอร์นี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
+            let input = await showPasswordPrompt(t('prompt_folder_lock'));
             if (input === null) return; 
-            if (input !== pwd) { showToastAlert("รหัสผ่านไม่ถูกต้อง"); return; }
+            if (input !== pwd) { showToastAlert(t('wrong_pwd')); return; }
             unlockedItems.add(folderPath); renderExplorer();
         }
     }
 
     window.showPausedPopup = function(e) { if (e) { e.preventDefault(); e.stopPropagation(); } document.getElementById('pausedModalOverlay').style.display = 'flex'; };
+
+    function getLocalizedName(defaultName, metaObj) {
+        const lang = localStorage.getItem('docSystem_lang') || 'TH';
+        if (!metaObj) return defaultName;
+        if (lang === 'EN' && metaObj.titleEN) return metaObj.titleEN;
+        if (lang === 'CN' && metaObj.titleCN) return metaObj.titleCN;
+        return defaultName;
+    }
+    function getLocalizedFileTitle(file) {
+        const lang = localStorage.getItem('docSystem_lang') || 'TH';
+        if (lang === 'EN' && file.titleEN) return file.titleEN;
+        if (lang === 'CN' && file.titleCN) return file.titleCN;
+        return file.title || '-';
+    }
 
     window.renderExplorer = function() {
       const searchInput = document.getElementById("searchInput");
@@ -1479,7 +1613,7 @@
                       current = current.children[part];
                   });
               }
-              current.files.push({ file: file, index: index, displayTitle: fileTitle });
+              current.files.push({ file: file, index: index, title: fileTitle });
           });
 
           if (query === "") {
@@ -1498,7 +1632,7 @@
           function generateTreeHTML(node) {
               let html = "";
               let subFolders = Object.values(node.children).sort((a,b) => getLocalizedName(a.name, a.meta).localeCompare(getLocalizedName(b.name, b.meta)));
-              let subFiles = node.files.sort((a,b) => a.displayTitle.localeCompare(b.displayTitle));
+              let subFiles = node.files.sort((a,b) => a.title.localeCompare(b.title));
 
               subFolders.forEach(folder => {
                   folderCounter++; let folderId = "tree-folder-" + folderCounter;
@@ -1528,7 +1662,7 @@
               });
 
               subFiles.forEach(f => {
-                  let file = f.file; let index = f.index;
+                  let file = f.file; let index = f.index; let title = f.title;
                   let iconSvg = icons.pdf; if (file.type === "youtube") iconSvg = icons.youtube; else if (file.type === "image") iconSvg = icons.image; else if (file.type === "link") iconSvg = icons.link;
                   let lockIcon = file.password ? `<span style="margin-left: 5px; color: var(--apple-text-muted); display: flex;">${icons.lock}</span>` : "";
                   let isPaused = file.isPaused || isPathPaused(file.normalizedPath);
@@ -1538,7 +1672,7 @@
                   html += `
                   <li class="tree-item">
                       <div class="file-item" onclick="${clickAction}">
-                          ${iconDisplay} <span style="white-space: normal; word-break: break-word; line-height: 1.4; padding: 4px 0; flex: 1;">${f.displayTitle}</span> ${lockIcon}
+                          ${iconDisplay} <span style="white-space: normal; word-break: break-word; line-height: 1.4; padding: 4px 0; flex: 1;">${title}</span> ${lockIcon}
                       </div>
                   </li>`;
               });
@@ -1546,12 +1680,12 @@
           }
 
           let treeInner = generateTreeHTML(root);
-          if (treeInner === "") treeInner = "<li class='tree-item'><div class='file-item' style='color:#86868b; cursor:default;'>ไม่พบข้อมูล</div></li>";
+          if (treeInner === "") treeInner = `<li class='tree-item'><div class='file-item' style='color:#86868b; cursor:default;'>${t('empty_data')}</div></li>`;
 
           document.getElementById("itemList").innerHTML = `<div style="grid-column: 1/-1; width: 100%;"><div class="tree-container"><ul>${treeInner}</ul></div></div>`;
           const pathTitleEl = document.getElementById("currentPathTitle"); const navBackBtn = document.getElementById("navBackBtn");
-          if (query !== "") { if (pathTitleEl) pathTitleEl.innerText = "ผลลัพธ์: " + query; if (navBackBtn) navBackBtn.style.display = "flex"; } 
-          else { if (pathTitleEl) pathTitleEl.innerText = "หน้าหลัก"; if (navBackBtn) navBackBtn.style.display = "none"; }
+          if (query !== "") { if (pathTitleEl) pathTitleEl.innerText = query; if (navBackBtn) navBackBtn.style.display = "flex"; } 
+          else { if (pathTitleEl) pathTitleEl.innerText = t('sys_path_home'); if (navBackBtn) navBackBtn.style.display = "none"; }
           document.getElementById("itemList").classList.remove("list-view");
           return;
       }
@@ -1562,42 +1696,39 @@
           let allFolderNames = new Set();
           Object.keys(folderMeta).forEach(path => {
               if (!path) return; if (isParentLocked(path)) return;
-              let meta = folderMeta[path];
-              let folderName = path.split('/').pop();
-              let displayName = getLocalizedName(folderName, meta);
-              
-              if (displayName.toLowerCase().includes(query)) allFolderNames.add(path);
+              let parts = path.split('/'); let folderName = parts[parts.length - 1];
+              let displayName = getLocalizedName(folderName, folderMeta[path]);
+              if (displayName.toLowerCase().includes(query) || folderName.toLowerCase().includes(query)) allFolderNames.add(path);
           });
           
           folderList = Array.from(allFolderNames).map(targetPath => {
               let parts = targetPath.split('/'); let folderName = parts[parts.length - 1];
               let meta = folderMeta[targetPath] || { color: 'blue', emoji: '', password: '', isPaused: false, updatedAt: null };
-              let displayName = getLocalizedName(folderName, meta);
-              return { name: folderName, displayTitle: displayName, targetPath, meta, isFolder: true };
+              return { name: folderName, targetPath, meta, isFolder: true, displayName: getLocalizedName(folderName, meta) };
           });
 
           userFiles.forEach(file => {
-              const fileTitle = getLocalizedFileTitle(file);
-              if (fileTitle && fileTitle.toLowerCase().includes(query)) {
+              let fileTitle = getLocalizedFileTitle(file);
+              if (fileTitle.toLowerCase().includes(query) || (file.title && file.title.toLowerCase().includes(query))) {
                   let checkPath = ""; let partsForCheck = file.normalizedPath.split('/'); let isParentLockedResult = false;
                   for (let i = 0; i < partsForCheck.length; i++) { 
                       checkPath = checkPath === "" ? partsForCheck[i] : checkPath + "/" + partsForCheck[i];
                       let m = folderMeta[checkPath]; if (m && m.password && !unlockedItems.has(checkPath)) { isParentLockedResult = true; break; }
                   }
                   if (!isParentLockedResult) {
-                      file.displayTitle = fileTitle;
+                      file.displayName = fileTitle;
                       filesToRender.push(file);
                   }
               }
           });
 
-          const pathTitleEl = document.getElementById("currentPathTitle"); if(pathTitleEl) pathTitleEl.innerText = "ผลลัพธ์: " + query;
+          const pathTitleEl = document.getElementById("currentPathTitle"); if(pathTitleEl) pathTitleEl.innerText = query;
           const navBackBtn = document.getElementById("navBackBtn"); if(navBackBtn) navBackBtn.style.display = "flex";
       } else {
           let foldersInCurrentPath = new Set(); 
           userFiles.forEach(file => {
               let fp = file.normalizedPath;
-              file.displayTitle = getLocalizedFileTitle(file);
+              file.displayName = getLocalizedFileTitle(file);
               if (fp === currentPath) filesToRender.push(file);
               else if (fp.startsWith(currentPath ? currentPath + "/" : "")) {
                   let immediateSubfolder = fp.substring(currentPath ? currentPath.length + 1 : 0).split('/')[0];
@@ -1608,24 +1739,22 @@
           folderList = Array.from(foldersInCurrentPath).map(folderName => {
               let targetPath = currentPath ? `${currentPath}/${folderName}` : folderName;
               let meta = folderMeta[targetPath] || { color: 'blue', emoji: '', password: '', isPaused: false, updatedAt: null };
-              let displayName = getLocalizedName(folderName, meta);
-              return { name: folderName, displayTitle: displayName, targetPath, meta, isFolder: true };
+              return { name: folderName, targetPath, meta, isFolder: true, displayName: getLocalizedName(folderName, meta) };
           });
 
           const navBackBtn = document.getElementById("navBackBtn"); const pathTitleEl = document.getElementById("currentPathTitle");
-          if (currentPath === "") { if(navBackBtn) navBackBtn.style.display = "none"; if(pathTitleEl) pathTitleEl.innerText = "หน้าหลัก"; } 
+          if (currentPath === "") { if(navBackBtn) navBackBtn.style.display = "none"; if(pathTitleEl) pathTitleEl.innerText = t('sys_path_home'); } 
           else { 
               if(navBackBtn) navBackBtn.style.display = "flex"; 
               let parts = currentPath.split('/'); 
-              let lastPath = parts[parts.length - 1];
-              let lastMeta = folderMeta[currentPath];
-              if(pathTitleEl) pathTitleEl.innerText = getLocalizedName(lastPath, lastMeta); 
+              let currentFolderName = parts[parts.length - 1];
+              if(pathTitleEl) pathTitleEl.innerText = getLocalizedName(currentFolderName, folderMeta[currentPath]); 
           }
       }
       
       const sortData = (a, b, isFolder) => {
           let valA, valB;
-          if (appSortMode === 'name') { valA = a.displayTitle.toLowerCase(); valB = b.displayTitle.toLowerCase(); } 
+          if (appSortMode === 'name') { valA = (a.displayName || "").toLowerCase(); valB = (b.displayName || "").toLowerCase(); } 
           else if (appSortMode === 'type') { valA = isFolder ? 'folder' : (a.type || ''); valB = isFolder ? 'folder' : (b.type || ''); } 
           else if (appSortMode === 'date') { valA = getSortDate(a, isFolder); valB = getSortDate(b, isFolder); } 
           else if (appSortMode === 'size') { valA = isFolder ? 0 : (a.url ? a.url.length : 0); valB = isFolder ? 0 : (b.url ? b.url.length : 0); }
@@ -1638,7 +1767,7 @@
       let html = "";
       folderList.forEach(folder => {
           const safeFolderName = encodeURIComponent(folder.name); const safeTargetPath = encodeURIComponent(folder.targetPath);
-          let meta = folder.meta; let lockHtml = meta.password ? `<div class="grid-lock">${icons.lock} ติดรหัสผ่าน</div>` : "";
+          let meta = folder.meta; let lockHtml = meta.password ? `<div class="grid-lock">${icons.lock} ${t('locked')}</div>` : "";
           let timeStr = formatTime(meta.updatedAt);
           let isPaused = isPathPaused(folder.targetPath);
           let iconDisplay = isPaused ? `<div class="loader-wrapper"><div class="z z-1">Z</div><div class="z z-2">Z</div><div class="z z-3">Z</div><div class="z z-4">Z</div></div>` : getFolderIcon(meta.color, meta.emoji);
@@ -1646,14 +1775,14 @@
 
           html += `
             <div class="grid-item" onclick="${clickAction}">
-              <div class="grid-icon">${iconDisplay}</div><div class="grid-name">${folder.displayTitle}</div><div class="grid-time">${timeStr}</div>${lockHtml}
+              <div class="grid-icon">${iconDisplay}</div><div class="grid-name">${folder.displayName}</div><div class="grid-time">${timeStr}</div>${lockHtml}
             </div>`;
       });
       
       filesToRender.forEach((file) => {
           const index = userFiles.findIndex(f => f.id === file.id);
           let iconSvg = icons.pdf; if (file.type === "youtube") iconSvg = icons.youtube; else if (file.type === "image") iconSvg = icons.image; else if (file.type === "link") iconSvg = icons.link;
-          let lockHtml = file.password ? `<div class="grid-lock">${icons.lock} ติดรหัสผ่าน</div>` : "";
+          let lockHtml = file.password ? `<div class="grid-lock">${icons.lock} ${t('locked')}</div>` : "";
           let fileTimeStr = file.updatedAt ? formatTime(file.updatedAt) : (file.createdAt ? formatTime(file.createdAt) : "");
           let isPaused = file.isPaused || isPathPaused(file.normalizedPath);
           let iconDisplay = isPaused ? `<div class="loader-wrapper"><div class="z z-1">Z</div><div class="z z-2">Z</div><div class="z z-3">Z</div><div class="z z-4">Z</div></div>` : iconSvg;
@@ -1661,13 +1790,13 @@
 
           html += `
             <div class="grid-item" onclick="${clickAction}">
-              <div class="grid-icon">${iconDisplay}</div><div class="grid-name">${file.displayTitle}</div><div class="grid-time">${fileTimeStr}</div>${lockHtml}
+              <div class="grid-icon">${iconDisplay}</div><div class="grid-name">${file.displayName}</div><div class="grid-time">${fileTimeStr}</div>${lockHtml}
             </div>`;
       });
       
       if(html === "") {
-          if (query !== "") html = "<p style='grid-column: 1/-1; text-align:center; color:#86868b; margin-top:20px;'>ไม่พบเอกสารที่ค้นหา</p>";
-          else html = "<p style='grid-column: 1/-1; text-align:center; color:#86868b; margin-top:20px;'>ไม่มีเอกสารในโฟลเดอร์นี้</p>";
+          if (query !== "") html = `<p style='grid-column: 1/-1; text-align:center; color:#86868b; margin-top:20px;'>${t('empty_search')}</p>`;
+          else html = `<p style='grid-column: 1/-1; text-align:center; color:#86868b; margin-top:20px;'>${t('empty_folder')}</p>`;
       }
       document.getElementById("itemList").innerHTML = html;
     }
@@ -1679,9 +1808,9 @@
       let meta = folderMeta[targetPath];
       
       if (meta && meta.password && !unlockedItems.has(targetPath)) {
-          let pwd = await showPasswordPrompt("โฟลเดอร์นี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
+          let pwd = await showPasswordPrompt(t('prompt_folder_lock'));
           if (pwd === null) return; 
-          if (pwd !== meta.password) { showToastAlert("รหัสผ่านไม่ถูกต้อง"); return; }
+          if (pwd !== meta.password) { showToastAlert(t('wrong_pwd')); return; }
           unlockedItems.add(targetPath);
       }
       const searchInput = document.getElementById("searchInput"); if (searchInput) searchInput.value = "";
@@ -1699,9 +1828,9 @@
     window.openFile = async function(index) {
       const file = userFiles[index];
       if (file.password && !unlockedItems.has(file.id)) {
-          let pwd = await showPasswordPrompt("เอกสารนี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
+          let pwd = await showPasswordPrompt(t('prompt_file_lock'));
           if (pwd === null) return; 
-          if (pwd !== file.password) { showToastAlert("รหัสผ่านไม่ถูกต้อง"); return; }
+          if (pwd !== file.password) { showToastAlert(t('wrong_pwd')); return; }
           unlockedItems.add(file.id);
       }
       
