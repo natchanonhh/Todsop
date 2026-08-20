@@ -45,7 +45,19 @@
         flex-direction: column;
     }
     
+    /* การจัดการ Dark Mode ให้ข้อความในกล่องยังเห็นชัด */
     body.high-contrast { background: #000 !important; color: #fff !important; }
+    body.high-contrast .system-container h2, 
+    body.high-contrast .system-container h3, 
+    body.high-contrast .system-container p {
+        color: #fff !important;
+    }
+    body.high-contrast input[type="text"] {
+        background-color: #333;
+        color: #fff;
+        border-color: #555;
+    }
+    
     a { text-decoration: none; color: inherit; cursor: pointer; }
 
     /* --- Header --- */
@@ -130,6 +142,7 @@
     .toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
     .toggle-switch input:checked + .toggle-slider { background-color: var(--pink-primary); }
     .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+    .toggle-switch input:disabled + .toggle-slider { opacity: 0.5; cursor: not-allowed; }
 
     .option-grid { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
     .option-btn { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background: transparent; cursor: pointer; color: #333; font-family: 'Sarabun'; font-size: 15px; }
@@ -420,7 +433,7 @@
               <!-- 2. ปุ่มเปลี่ยนภาษา (โลก) -->
               <button class="tool-btn" onclick="document.getElementById('langModal').style.display='flex'">
                   <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path>
                   </svg>
                   <span id="langTextBadge" class="lang-badge">TH</span>
               </button>
@@ -459,7 +472,7 @@
         <div id="loginBanner" class="banner-wrapper" style="display:none;"></div>
         <div id="loginClock" style="display:none; font-size: 13px; color: var(--apple-text-muted); margin-top: -10px; margin-bottom: 20px; text-align: center;"></div>
         
-        <input type="text" id="studentId" placeholder="ระบุชื่อ หรือรหัสประจำตัว..." required autocomplete="off">
+        <input type="text" id="studentId" placeholder="ระบุชื่อ หรือรหัสประจำตัว..." required>
         
         <!-- ส่วน Cloudflare Turnstile ตรวจจับบอท (คีย์ของจริง) -->
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
@@ -929,7 +942,6 @@
       renderExplorer(); document.getElementById("optionsMenu").style.display = "none";
     }
 
-    /* 🔥 เพิ่มฟังก์ชัน getSortDate ที่หายไปกลับมา เพื่อแก้ปัญหา ReferenceError 🔥 */
     function getSortDate(obj, isFolder) {
         let ts = isFolder ? obj.meta.updatedAt : (obj.updatedAt || obj.createdAt);
         if (!ts) return 0;
@@ -985,129 +997,8 @@
     setInterval(updateRealtimeClock, 1000); updateRealtimeClock();
 
     // ----------------------------------------------------
-    // ฟังก์ชันตรวจสอบการเข้าสู่ระบบ
+    // UI ควบคุมแท็บ, ภาษา, คุกกี้, Scroll, Info Modal
     // ----------------------------------------------------
-    window.checkData = async function(autoLoginId = null) {
-      let rawId = "";
-
-      // ถ้าระบบจำไว้ (Auto Login) ไม่ต้องเช็คบอท
-      if (autoLoginId) {
-          rawId = autoLoginId;
-      } else {
-          // ล็อกอินปกติ (ต้องกดติ๊กบอท)
-          const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
-          if (turnstileResponse && !turnstileResponse.value) {
-              document.getElementById("errorMsg").innerHTML = "⚠️ <b>ระบบรักษาความปลอดภัย</b><br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ";
-              document.getElementById("errorMsg").style.display = "block";
-              return;
-          }
-          rawId = document.getElementById("studentId").value.trim();
-      }
-
-      if (!rawId) return;
-      document.getElementById("errorMsg").style.display = "none"; unlockedItems.clear(); 
-      
-      try {
-        const searchId = rawId.replace(/[\s"']/g, '').toLowerCase();
-        const q1 = query(collection(db, "jobs"), where("allowedUsers", "array-contains", rawId));
-        const q2 = query(collection(db, "jobs"), where("searchableUsers", "array-contains", searchId));
-        const q3 = query(collection(db, "jobs"), where("type", "==", "system_folder"));
-
-        const qRem = query(collection(db, "reminders"), where("allowedUsers", "array-contains", rawId));
-        const qSch = query(collection(db, "schedules"), where("allowedUsers", "array-contains", rawId));
-
-        const [snap1, snap2, snap3, snapRem, snapSch] = await Promise.all([getDocs(q1), getDocs(q2), getDocs(q3), getDocs(qRem), getDocs(qSch)]);
-
-        const fileMap = new Map();
-        snap1.forEach(docSnap => { fileMap.set(docSnap.id, { id: docSnap.id, ...docSnap.data() }); });
-        snap2.forEach(docSnap => { fileMap.set(docSnap.id, { id: docSnap.id, ...docSnap.data() }); });
-
-        userReminders = []; snapRem.forEach(docSnap => { userReminders.push({ id: docSnap.id, ...docSnap.data() }); });
-        userSchedules = []; snapSch.forEach(docSnap => { userSchedules.push({ id: docSnap.id, ...docSnap.data() }); });
-
-        let allFiles = Array.from(fileMap.values());
-        
-        if (allFiles.length > 0 || userReminders.length > 0 || userSchedules.length > 0) {
-          let matchedId = rawId;
-          folderMeta = {}; userFiles = [];
-
-          for (const file of allFiles) {
-             if (file.allowedUsers) {
-                const exactMatch = file.allowedUsers.find(id => id.replace(/[\s"']/g, '').toLowerCase() === searchId);
-                if (exactMatch) { matchedId = exactMatch; break; }
-             }
-          }
-          currentId = matchedId;
-          
-          snap3.forEach(docSnap => {
-              const data = docSnap.data();
-              let path = (data.folder || "").trim().replace(/^\/+|\/+$/g, '');
-              folderMeta[path] = { 
-                  color: data.color || 'blue', emoji: data.emoji || '', password: data.password || '', isPaused: data.isPaused || false, updatedAt: data.updatedAt || data.createdAt || null 
-              };
-          });
-          
-          allFiles.forEach(file => {
-              if (file.type !== "system_folder") {
-                  let path = (file.folder || "").trim().replace(/^\/+|\/+$/g, '');
-                  file.normalizedPath = path; userFiles.push(file);
-              }
-          });
-
-          const logsCol = collection(db, "access_logs");
-          const newLog = await addDoc(logsCol, { studentId: currentId, loginTime: serverTimestamp(), logoutTime: null });
-          currentLogId = newLog.id;
-
-          // บันทึก Session เก็บไว้ 3 ชั่วโมง
-          localStorage.setItem('docSystem_user', currentId);
-          localStorage.setItem('docSystem_expiry', Date.now() + (3 * 60 * 60 * 1000));
-
-          document.getElementById("loginBox").style.display = "none";
-          document.getElementById("menuBox").style.display = "block";
-          document.getElementById("menuTitle").innerText = `รหัสผู้ใช้งาน: ${currentId}`;
-          document.getElementById("mainTopIcons").style.display = "flex";
-          document.getElementById("logoutHeaderBtn").style.display = "flex"; // แสดงปุ่มเมื่อล็อกอินผ่าน
-          updateReminderBadge();
-
-          currentPath = ""; renderExplorer();
-        } else { 
-            localStorage.removeItem('docSystem_user');
-            localStorage.removeItem('docSystem_expiry');
-
-            document.getElementById("errorMsg").innerText = "ไม่พบสิทธิ์การเข้าถึงข้อมูลใดๆ ในระบบ";
-            document.getElementById("errorMsg").style.display = "block"; 
-        }
-      } catch (error) { 
-          console.error(error);
-          showToastAlert("เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล"); 
-      }
-    }
-
-    // ----------------------------------------------------
-    // ฟังก์ชันจัดการ Auto Login, Toast และอื่นๆ
-    // ----------------------------------------------------
-    window.onload = function() {
-        if(!localStorage.getItem('cookieConsent_DocSystem')) {
-            setTimeout(() => { document.getElementById('cookieNotice').style.display = 'block'; }, 1000);
-        }
-
-        // Auto-Login: ดึงข้อมูล Session จาก LocalStorage
-        const savedUser = localStorage.getItem('docSystem_user');
-        const savedExpiry = localStorage.getItem('docSystem_expiry');
-        if (savedUser && savedExpiry && Date.now() < parseInt(savedExpiry)) {
-            checkData(savedUser);
-        }
-    };
-
-    let toastTimeoutAlert;
-    window.showToastAlert = function(message) {
-        const toast = document.getElementById("toast");
-        toast.innerText = message;
-        toast.className = "show";
-        clearTimeout(toastTimeoutAlert);
-        toastTimeoutAlert = setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
-    }
-
     window.switchTab = function(tabId, el) {
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
@@ -1126,6 +1017,35 @@
         document.getElementById('infoModalTitle').innerText = title;
         document.getElementById('infoModalContent').innerHTML = content;
         document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    // ฟังก์ชันตรวจสอบ Auto Login
+    window.onload = function() {
+        if(!localStorage.getItem('cookieConsent_DocSystem')) {
+            setTimeout(() => { document.getElementById('cookieNotice').style.display = 'block'; }, 1000);
+        }
+
+        const savedUser = localStorage.getItem('docSystem_user');
+        const savedExpiry = localStorage.getItem('docSystem_expiry');
+        if (savedUser && savedExpiry && Date.now() < parseInt(savedExpiry)) {
+            // ถ้า Session ยังไม่หมดอายุ ให้เข้าสู่ระบบโดยไม่ต้องโหลดหน้าล็อกอิน
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("menuBox").style.display = "block";
+            checkData(savedUser);
+        } else {
+            // หมดอายุแล้ว แสดงหน้าล็อกอินปกติ
+            document.getElementById("loginBox").style.display = "block";
+            document.getElementById("menuBox").style.display = "none";
+        }
+    };
+
+    let toastTimeoutAlert;
+    window.showToastAlert = function(message) {
+        const toast = document.getElementById("toast");
+        toast.innerText = message;
+        toast.className = "show";
+        clearTimeout(toastTimeoutAlert);
+        toastTimeoutAlert = setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
     }
 
     window.acceptAllCookies = function() { localStorage.setItem('cookieConsent_DocSystem', 'accepted'); document.getElementById('cookieNotice').style.display = 'none'; }
@@ -1203,6 +1123,111 @@
             if(translations[langCode][key]) elem.innerHTML = translations[langCode][key];
         });
         document.getElementById('langModal').style.display = 'none';
+    }
+
+    // ----------------------------------------------------
+    // โค้ดส่วนระบบ DocumentSystem Firebase
+    // ----------------------------------------------------
+    window.checkData = async function(autoLoginId = null) {
+      let rawId = "";
+
+      if (autoLoginId) {
+          rawId = autoLoginId;
+      } else {
+          const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
+          if (turnstileResponse && !turnstileResponse.value) {
+              document.getElementById("errorMsg").innerHTML = "<b>ระบบรักษาความปลอดภัย</b><br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ";
+              document.getElementById("errorMsg").style.display = "block";
+              return;
+          }
+          rawId = document.getElementById("studentId").value.trim();
+      }
+
+      if (!rawId) return;
+      document.getElementById("errorMsg").style.display = "none"; unlockedItems.clear(); 
+      
+      try {
+        const searchId = rawId.replace(/[\s"']/g, '').toLowerCase();
+        
+        // ดึงข้อมูลเฉพาะที่จำเป็น (ไม่ดึงโฟลเดอร์/ไฟล์มาหมดตั้งแต่แรก)
+        const q1 = query(collection(db, "jobs"), where("allowedUsers", "array-contains", rawId));
+        const q2 = query(collection(db, "jobs"), where("searchableUsers", "array-contains", searchId));
+        const qRem = query(collection(db, "reminders"), where("allowedUsers", "array-contains", rawId));
+        const qSch = query(collection(db, "schedules"), where("allowedUsers", "array-contains", rawId));
+
+        const [snap1, snap2, snapRem, snapSch] = await Promise.all([getDocs(q1), getDocs(q2), getDocs(qRem), getDocs(qSch)]);
+
+        const fileMap = new Map();
+        snap1.forEach(docSnap => { fileMap.set(docSnap.id, { id: docSnap.id, ...docSnap.data() }); });
+        snap2.forEach(docSnap => { fileMap.set(docSnap.id, { id: docSnap.id, ...docSnap.data() }); });
+
+        userReminders = []; snapRem.forEach(docSnap => { userReminders.push({ id: docSnap.id, ...docSnap.data() }); });
+        userSchedules = []; snapSch.forEach(docSnap => { userSchedules.push({ id: docSnap.id, ...docSnap.data() }); });
+
+        let allFiles = Array.from(fileMap.values());
+        
+        if (allFiles.length > 0 || userReminders.length > 0 || userSchedules.length > 0) {
+          let matchedId = rawId;
+          folderMeta = {}; userFiles = [];
+
+          for (const file of allFiles) {
+             if (file.allowedUsers) {
+                const exactMatch = file.allowedUsers.find(id => id.replace(/[\s"']/g, '').toLowerCase() === searchId);
+                if (exactMatch) { matchedId = exactMatch; break; }
+             }
+          }
+          currentId = matchedId;
+          
+          // ดึงโฟลเดอร์เฉพาะเมื่อล็อกอินผ่าน
+          const q3 = query(collection(db, "jobs"), where("type", "==", "system_folder"));
+          const snap3 = await getDocs(q3);
+          snap3.forEach(docSnap => {
+              const data = docSnap.data();
+              let path = (data.folder || "").trim().replace(/^\/+|\/+$/g, '');
+              folderMeta[path] = { 
+                  color: data.color || 'blue', emoji: data.emoji || '', password: data.password || '', isPaused: data.isPaused || false, updatedAt: data.updatedAt || data.createdAt || null 
+              };
+          });
+          
+          allFiles.forEach(file => {
+              if (file.type !== "system_folder") {
+                  let path = (file.folder || "").trim().replace(/^\/+|\/+$/g, '');
+                  file.normalizedPath = path; userFiles.push(file);
+              }
+          });
+
+          // บันทึก Log แค่ล็อกอินปกติ ไม่บันทึกซ้ำตอน Auto Login
+          if (!autoLoginId) {
+              const logsCol = collection(db, "access_logs");
+              const newLog = await addDoc(logsCol, { studentId: currentId, loginTime: serverTimestamp(), logoutTime: null });
+              currentLogId = newLog.id;
+          }
+
+          localStorage.setItem('docSystem_user', currentId);
+          localStorage.setItem('docSystem_expiry', Date.now() + (3 * 60 * 60 * 1000));
+
+          document.getElementById("loginBox").style.display = "none";
+          document.getElementById("menuBox").style.display = "block";
+          document.getElementById("menuTitle").innerText = `รหัสผู้ใช้งาน: ${currentId}`;
+          document.getElementById("mainTopIcons").style.display = "flex";
+          document.getElementById("logoutHeaderBtn").style.display = "flex"; 
+          updateReminderBadge();
+
+          currentPath = ""; renderExplorer();
+        } else { 
+            localStorage.removeItem('docSystem_user');
+            localStorage.removeItem('docSystem_expiry');
+            
+            // กลับไปแสดงหน้าล็อกอินถ้าล็อกอิน Auto ไม่ผ่าน
+            document.getElementById("loginBox").style.display = "block";
+            document.getElementById("menuBox").style.display = "none";
+
+            document.getElementById("errorMsg").innerText = "ไม่พบสิทธิ์การเข้าถึงข้อมูลใดๆ ในระบบ";
+            document.getElementById("errorMsg").style.display = "block"; 
+        }
+      } catch (error) { 
+          showToastAlert("เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล"); 
+      }
     }
 
     // ----------------------------------------------------
@@ -1660,6 +1685,8 @@
       } else if (file.type === "pdf") {
         blocker.style.display = "block"; viewer.innerHTML = `<iframe class="pdf-viewer" src="${file.url}#toolbar=0&navpanes=0&scrollbar=0" allowfullscreen></iframe>`;
       }
+      
+      // ส่งแค่ file.id ไปตรวจสอบดาวน์โหลด
       checkDownloadStatus(file.id);
     }
 
