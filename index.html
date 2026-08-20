@@ -430,12 +430,11 @@
               <!-- 1. ปุ่ม Aa -->
               <button class="tool-btn" onclick="document.getElementById('accessModal').style.display='flex'">Aa</button>
               
-              <!-- 2. ปุ่มเปลี่ยนภาษา (โลก) -->
+              <!-- 2. ปุ่มเปลี่ยนภาษา (โลก) เอาอักษรทับออกแล้ว -->
               <button class="tool-btn" onclick="document.getElementById('langModal').style.display='flex'">
                   <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path>
+                      <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                   </svg>
-                  <span id="langTextBadge" class="lang-badge">TH</span>
               </button>
 
               <!-- 3. ปุ่มออกจากระบบ (ถูกซ่อนไว้ในตอนแรก จะโชว์เมื่อล็อกอินสำเร็จ) -->
@@ -472,7 +471,7 @@
         <div id="loginBanner" class="banner-wrapper" style="display:none;"></div>
         <div id="loginClock" style="display:none; font-size: 13px; color: var(--apple-text-muted); margin-top: -10px; margin-bottom: 20px; text-align: center;"></div>
         
-        <input type="text" id="studentId" placeholder="ระบุชื่อ หรือรหัสประจำตัว..." required>
+        <input type="text" id="studentId" placeholder="ระบุชื่อ หรือรหัสประจำตัว..." required autocomplete="off">
         
         <!-- ส่วน Cloudflare Turnstile ตรวจจับบอท (คีย์ของจริง) -->
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
@@ -481,10 +480,10 @@
 
         <button class="sys-btn btn-login" onclick="checkData()" data-i18n="sys_btn_login">เข้าสู่ระบบ</button>
         
-        <!-- ข้อความแจ้งเตือนบอทแบบทางการ -->
-        <div id="errorMsg" style="color: var(--apple-red); display: none; margin-top: 15px; font-weight: 500; background-color: #ffe6e6; padding: 10px; border-radius: 8px; border-left: 4px solid var(--apple-red); text-align: left; font-size: 14px;">
-            ⚠️ <b>ระบบรักษาความปลอดภัย</b><br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ
-        </div>
+        <!-- ข้อความแจ้งเตือนบอทแบบกึ่งกลาง ไม่มีกรอบและอีโมจิ -->
+        <p id="errorMsg" style="color: var(--apple-red); display: none; margin-top: 15px; font-weight: 500; text-align: center; font-size: 15px;">
+            ระบบรักษาความปลอดภัย<br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ
+        </p>
       </div>
 
       <!-- Menu Box (โฟลเดอร์/ไฟล์) แบบมีกล่องขาวปกติ -->
@@ -679,7 +678,6 @@
               <a href="#" onclick="switchTab('policyView', null)" data-i18n="legal_2">นโยบายการคุ้มครองข้อมูลส่วนบุคคล</a>
           </div>
           <div class="social-icons">
-              <!-- ไม่แสดง Toast เด้งบอกอีกแล้วตามคำขอ -->
               <button class="reset-btn" onclick="resetCookies()" data-i18n="btn_reset">รีเซ็ตค่าคุกกี้ (สำหรับทดสอบ)</button>
           </div>
       </div>
@@ -1019,23 +1017,20 @@
         document.getElementById('infoModal').style.display = 'flex';
     }
 
-    // ฟังก์ชันตรวจสอบ Auto Login
+    // ฟังก์ชันตรวจสอบ Auto Login ทันทีเมื่อเปิดเว็บ
     window.onload = function() {
         if(!localStorage.getItem('cookieConsent_DocSystem')) {
             setTimeout(() => { document.getElementById('cookieNotice').style.display = 'block'; }, 1000);
         }
 
+        // Auto-Login: ดึงข้อมูล Session จาก LocalStorage
         const savedUser = localStorage.getItem('docSystem_user');
         const savedExpiry = localStorage.getItem('docSystem_expiry');
         if (savedUser && savedExpiry && Date.now() < parseInt(savedExpiry)) {
-            // ถ้า Session ยังไม่หมดอายุ ให้เข้าสู่ระบบโดยไม่ต้องโหลดหน้าล็อกอิน
+            // ถ้า Session ยังไม่หมดอายุ (ภายใน 3 ชม.) ให้เข้าสู่ระบบเลย
             document.getElementById("loginBox").style.display = "none";
             document.getElementById("menuBox").style.display = "block";
             checkData(savedUser);
-        } else {
-            // หมดอายุแล้ว แสดงหน้าล็อกอินปกติ
-            document.getElementById("loginBox").style.display = "block";
-            document.getElementById("menuBox").style.display = "none";
         }
     };
 
@@ -1115,7 +1110,6 @@
         }
     };
     window.changeLang = function(langCode, btn) {
-        document.getElementById('langTextBadge').innerText = langCode;
         document.querySelectorAll('#langModal .option-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.querySelectorAll('[data-i18n]').forEach(elem => {
@@ -1131,12 +1125,14 @@
     window.checkData = async function(autoLoginId = null) {
       let rawId = "";
 
+      // ถ้าระบบจำไว้ (Auto Login) ไม่ต้องเช็คบอท
       if (autoLoginId) {
           rawId = autoLoginId;
       } else {
+          // ล็อกอินปกติ (ต้องกดติ๊กบอท)
           const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
           if (turnstileResponse && !turnstileResponse.value) {
-              document.getElementById("errorMsg").innerHTML = "<b>ระบบรักษาความปลอดภัย</b><br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ";
+              document.getElementById("errorMsg").innerHTML = "ระบบรักษาความปลอดภัย<br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ";
               document.getElementById("errorMsg").style.display = "block";
               return;
           }
@@ -1149,7 +1145,7 @@
       try {
         const searchId = rawId.replace(/[\s"']/g, '').toLowerCase();
         
-        // ดึงข้อมูลเฉพาะที่จำเป็น (ไม่ดึงโฟลเดอร์/ไฟล์มาหมดตั้งแต่แรก)
+        // โค้ดดึงข้อมูลลดภาระ (ดึงเฉพาะที่จำเป็นเพื่อยืนยันสิทธิ์ก่อน)
         const q1 = query(collection(db, "jobs"), where("allowedUsers", "array-contains", rawId));
         const q2 = query(collection(db, "jobs"), where("searchableUsers", "array-contains", searchId));
         const qRem = query(collection(db, "reminders"), where("allowedUsers", "array-contains", rawId));
@@ -1178,7 +1174,7 @@
           }
           currentId = matchedId;
           
-          // ดึงโฟลเดอร์เฉพาะเมื่อล็อกอินผ่าน
+          // ดึงโฟลเดอร์ก็ต่อเมื่อผ่านการล็อกอินแล้ว
           const q3 = query(collection(db, "jobs"), where("type", "==", "system_folder"));
           const snap3 = await getDocs(q3);
           snap3.forEach(docSnap => {
@@ -1196,13 +1192,14 @@
               }
           });
 
-          // บันทึก Log แค่ล็อกอินปกติ ไม่บันทึกซ้ำตอน Auto Login
+          // บันทึก Log เข้าระบบ เฉพาะกรณีไม่ได้ Auto Login (ลดปริมาณ Log ซ้ำซ้อน)
           if (!autoLoginId) {
               const logsCol = collection(db, "access_logs");
               const newLog = await addDoc(logsCol, { studentId: currentId, loginTime: serverTimestamp(), logoutTime: null });
               currentLogId = newLog.id;
           }
 
+          // บันทึก Session เก็บไว้ 3 ชั่วโมง
           localStorage.setItem('docSystem_user', currentId);
           localStorage.setItem('docSystem_expiry', Date.now() + (3 * 60 * 60 * 1000));
 
@@ -1210,22 +1207,25 @@
           document.getElementById("menuBox").style.display = "block";
           document.getElementById("menuTitle").innerText = `รหัสผู้ใช้งาน: ${currentId}`;
           document.getElementById("mainTopIcons").style.display = "flex";
-          document.getElementById("logoutHeaderBtn").style.display = "flex"; 
+          document.getElementById("logoutHeaderBtn").style.display = "flex"; // แสดงปุ่มเมื่อล็อกอินผ่าน
           updateReminderBadge();
 
           currentPath = ""; renderExplorer();
         } else { 
+            // กรณีเข้าสู่ระบบไม่ผ่าน ให้ลบความจำเดิมทิ้งถ้ามี
             localStorage.removeItem('docSystem_user');
             localStorage.removeItem('docSystem_expiry');
             
-            // กลับไปแสดงหน้าล็อกอินถ้าล็อกอิน Auto ไม่ผ่าน
+            // ให้แสดงหน้าล็อกอินปกติ
             document.getElementById("loginBox").style.display = "block";
             document.getElementById("menuBox").style.display = "none";
 
-            document.getElementById("errorMsg").innerText = "ไม่พบสิทธิ์การเข้าถึงข้อมูลใดๆ ในระบบ";
+            document.getElementById("errorMsg").innerHTML = "ไม่พบสิทธิ์การเข้าถึงข้อมูลใดๆ ในระบบ";
             document.getElementById("errorMsg").style.display = "block"; 
         }
       } catch (error) { 
+          // ใช้ showToastAlert เพื่อให้เด้งข้อความสวยๆ แทน alert ธรรมดา
+          console.error(error);
           showToastAlert("เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล"); 
       }
     }
