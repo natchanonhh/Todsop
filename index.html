@@ -66,9 +66,8 @@
         padding: 15px 5%; background-color: transparent; border-bottom: 1px solid rgba(0,0,0,0.05); width: 100%;
     }
     .logo-container { display: flex; align-items: center; gap: 15px; }
-    /* ปรับแต่งโลโก้ให้มีพื้นหลังสีธีม ขนาดใหญ่ขึ้น และมีขอบมนสวยงาม */
-    .logo-img { width: 65px; height: 65px; border-radius: 12px; border: none; object-fit: contain; background-color: var(--pink-primary); padding: 5px; }
-    .logo-text { font-size: 24px; font-weight: bold; color: var(--pink-primary); line-height: 1; margin: 0; }
+    /* ลบกรอบสีชมพู ปรับให้เป็นรูปภาพโปร่งใสตามปกติ */
+    .logo-img { height: 65px; width: auto; max-width: 250px; border: none; object-fit: contain; background: transparent; }
 
     .nav-links { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
     .nav-links a { font-size: 15px; color: #333; padding: 5px 10px; border-radius: 4px; transition: background 0.3s; font-weight: 500; }
@@ -415,10 +414,8 @@
   <!-- ================== HEADER ================== -->
   <header>
       <div class="logo-container">
+          <!-- ใช้แค่รูปภาพโลโก้อย่างเดียว -->
           <img src="https://i.postimg.cc/hvWpwkgG/Docum.png" alt="Logo" class="logo-img">
-          <div style="display: flex; flex-direction: column;">
-              <div class="logo-text" data-i18n="logo">ระบบเอกสาร</div>
-          </div>
       </div>
 
       <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: flex-end;">
