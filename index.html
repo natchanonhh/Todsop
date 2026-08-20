@@ -20,7 +20,6 @@
     :root {
         --base-font-size: 16px;
         --pink-primary: #9d5b78;
-        /* ตัวแปรของ DocumentSystem.txt ต้นฉบับ */
         --apple-blue: #0071e3;
         --apple-blue-hover: #0077ed;
         --apple-green: #34c759;
@@ -60,6 +59,16 @@
     
     a { text-decoration: none; color: inherit; cursor: pointer; }
 
+    /* =======================================================
+       CSS สำหรับซ่อน Google Translate UI ที่กวนใจ
+       ======================================================= */
+    .goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon { display: none !important; }
+    body { top: 0px !important; position: static !important; }
+    .goog-tooltip { display: none !important; }
+    .goog-tooltip:hover { display: none !important; }
+    .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+    #goog-gt-tt { display: none !important; }
+
     /* --- Header --- */
     header {
         display: flex; justify-content: space-between; align-items: center;
@@ -75,7 +84,7 @@
 
     .header-tools { display: flex; gap: 15px; border-left: 1px solid #ccc; padding-left: 20px; align-items: center; }
     .tool-btn { background: none; border: none; font-size: 18px; font-weight: bold; cursor: pointer; color: #333; position: relative; display: flex; align-items: center;}
-    .lang-badge { position: absolute; top: -5px; right: -8px; background: var(--pink-primary); color: white; font-size: 9px; padding: 2px 4px; border-radius: 8px; font-weight: bold; }
+    .lang-badge { position: absolute; top: -5px; right: -8px; background: var(--pink-primary); color: white; font-size: 9px; padding: 2px 4px; border-radius: 8px; font-weight: bold; pointer-events: none;}
 
     /* --- View Wrappers --- */
     .view-section { flex: 1; width: 100%; padding: 20px 5%; display: none; }
@@ -409,6 +418,19 @@
 </head>
 <body>
 
+  <!-- ซ่อนกล่อง Google Translate ไว้เบื้องหลัง -->
+  <div id="google_translate_element" style="display:none;"></div>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'th', 
+        includedLanguages: 'th,en,zh-CN', 
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
   <!-- ================== HEADER ================== -->
   <header>
       <div class="logo-container">
@@ -435,6 +457,7 @@
                   <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                   </svg>
+                  <span id="langTextBadge" class="lang-badge" style="display:none;">TH</span>
               </button>
 
               <!-- 3. ปุ่มออกจากระบบ (ถูกซ่อนไว้ในตอนแรก จะโชว์เมื่อล็อกอินสำเร็จ) -->
@@ -678,6 +701,7 @@
               <a href="#" onclick="switchTab('policyView', null)" data-i18n="legal_2">นโยบายการคุ้มครองข้อมูลส่วนบุคคล</a>
           </div>
           <div class="social-icons">
+              <!-- ไม่แสดง Toast เด้งบอกอีกแล้วตามคำขอ -->
               <button class="reset-btn" onclick="resetCookies()" data-i18n="btn_reset">รีเซ็ตค่าคุกกี้ (สำหรับทดสอบ)</button>
           </div>
       </div>
@@ -735,15 +759,15 @@
       </div>
   </div>
 
-  <!-- Modal เปลี่ยนภาษา -->
+  <!-- Modal เปลี่ยนภาษาด้วย Google Translate -->
   <div class="ui-modal" id="langModal">
       <div class="ui-modal-content" style="max-width: 350px;">
           <button class="ui-close-btn" onclick="document.getElementById('langModal').style.display='none'">&times;</button>
           <h3 data-i18n="lang_title">ภาษา (Language)</h3>
           <div class="option-grid">
-              <button class="option-btn active" onclick="changeLang('TH', this)">ไทย</button>
-              <button class="option-btn" onclick="changeLang('EN', this)">English</button>
-              <button class="option-btn" onclick="changeLang('CN', this)">中文</button>
+              <button class="option-btn active" onclick="changeLang('th', 'TH', this)">ไทย</button>
+              <button class="option-btn" onclick="changeLang('en', 'EN', this)">English</button>
+              <button class="option-btn" onclick="changeLang('zh-CN', 'CN', this)">中文</button>
           </div>
       </div>
   </div>
@@ -1046,6 +1070,7 @@
     window.acceptAllCookies = function() { localStorage.setItem('cookieConsent_DocSystem', 'accepted'); document.getElementById('cookieNotice').style.display = 'none'; }
     window.saveCookieSettings = function() { localStorage.setItem('cookieConsent_DocSystem', 'custom'); document.getElementById('cookieSettingsModal').style.display = 'none'; document.getElementById('cookieNotice').style.display = 'none'; }
     
+    // รีเซ็ตคุกกี้โดยไม่แจ้งเตือน
     window.resetCookies = function() { 
         localStorage.removeItem('cookieConsent_DocSystem'); 
         document.getElementById('cookieNotice').style.display = 'block'; 
@@ -1059,64 +1084,33 @@
     }
     window.toggleContrast = function() { document.body.classList.toggle('high-contrast'); }
 
+    // ฟังก์ชันออกจากระบบที่สมบูรณ์ (ล้างค่า 3 ชม. ทิ้งด้วย)
     window.logoutSystem = function() {
         localStorage.removeItem('docSystem_user');
         localStorage.removeItem('docSystem_expiry');
         location.reload();
     }
 
-    const translations = {
-        TH: {
-            logo: "ระบบเอกสาร", nav_1: "ระบบเอกสาร", nav_2: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", nav_3: "คู่มือการใช้งาน", nav_4: "ติดต่อเรา",
-            breadcrumb: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", page_title: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", page_subtitle: "เอกสารที่เกี่ยวข้องกับระบบแชทงานเอกสาร", doc_desc: "มีดังนี้",
-            doc_1: "ข้อบังคับว่าด้วย การคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2563", doc_2: "ประกาศเรื่อง การจัดการความปลอดภัยของข้อมูลในระบบแชท พ.ศ. 2565", doc_3: "พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA)", doc_4: "คู่มือการอัปโหลดและแชร์เอกสารภายในองค์กร",
-            footer_col1: "เกี่ยวกับระบบ", f_link1: "แนะนำระบบ", f_link2: "ความปลอดภัย", f_link3: "โครงสร้างระบบ",
-            footer_col3: "ติดต่อเรา", f_address: "123 ถนนตัวอย่าง แขวงทดสอบ<br>เขตระบบงาน กรุงเทพมหานคร 10000",
-            legal_1: "การเปิดเผยข้อมูล", legal_2: "นโยบายการคุ้มครองข้อมูลส่วนบุคคล", btn_reset: "รีเซ็ตค่าคุกกี้ (สำหรับทดสอบ)",
-            lang_title: "ภาษา", access_title: "ตัวช่วยการเข้าถึง", access_font: "ขนาดตัวอักษร", access_contrast: "โหมดสีตัดกันสูง",
-            cookie_notice_title: "คุกกี้บนเว็บไซต์นี้", cookie_notice_desc: "เราใช้คุกกี้ที่จำเป็นเพื่อให้เว็บไซต์และระบบแชทงานเอกสารทำงานได้อย่างราบรื่น",
-            cookie_btn_settings: "ตั้งค่าคุกกี้", cookie_btn_accept: "ยอมรับทั้งหมด", cookie_title: "การตั้งค่าคุกกี้", cookie_desc: "คุณสามารถเลือกเปิดหรือปิดการใช้งานคุกกี้แต่ละประเภทได้",
-            cookie_req_title: "คุกกี้ที่จำเป็นอย่างยิ่ง", cookie_req_desc: "จำเป็นสำหรับการทำงานพื้นฐานของระบบ ปิดไม่ได้", cookie_stat_title: "คุกกี้เพื่อการวิเคราะห์", cookie_stat_desc: "ช่วยให้เราเข้าใจการใช้งานของคุณเพื่อพัฒนาให้ดีขึ้น",
-            btn_cancel: "ยกเลิก", btn_save: "บันทึกการตั้งค่า",
-            sys_login_title: "Document System", sys_login_desc: "กรุณาระบุตัวตนเพื่อตรวจสอบสิทธิ์การเข้าถึง (Smart Login)", sys_btn_login: "เข้าสู่ระบบ", sys_menu_subtitle: "กรุณาเลือกรายการที่คุณต้องการเข้าชม", sys_path_home: "หน้าหลัก"
-        },
-        EN: {
-            logo: "Doc System", nav_1: "System", nav_2: "Privacy Policy", nav_3: "Manual", nav_4: "Contact",
-            breadcrumb: "Privacy Policy", page_title: "Privacy Policy", page_subtitle: "Documents related to Document Chat System", doc_desc: "As follows:",
-            doc_1: "Personal Data Protection Regulation B.E. 2563", doc_2: "Announcement on Chat System Data Security B.E. 2565", doc_3: "Personal Data Protection Act B.E. 2562 (PDPA)", doc_4: "Internal Document Upload and Sharing Manual",
-            footer_col1: "About", f_link1: "Intro", f_link2: "Security", f_link3: "Architecture",
-            footer_col3: "Contact", f_address: "123 Sample Rd, Bangkok 10000",
-            legal_1: "Data Disclosure", legal_2: "Privacy Policy", btn_reset: "Reset Cookies",
-            lang_title: "Language", access_title: "Accessibility", access_font: "Font Size", access_contrast: "High Contrast",
-            cookie_notice_title: "Cookies", cookie_notice_desc: "We use cookies to ensure our website runs smoothly.",
-            cookie_btn_settings: "Cookie Settings", cookie_btn_accept: "Accept All", cookie_title: "Cookie Settings", cookie_desc: "Enable or disable specific cookies.",
-            cookie_req_title: "Strictly Necessary", cookie_req_desc: "Required for the system to function.", cookie_stat_title: "Analytics", cookie_stat_desc: "Helps us improve the system.",
-            btn_cancel: "Cancel", btn_save: "Save",
-            sys_login_title: "Document System", sys_login_desc: "Please identify yourself to verify access (Smart Login)", sys_btn_login: "Login", sys_menu_subtitle: "Please select the item you want to view", sys_path_home: "Home"
-        },
-        CN: {
-            logo: "文件系统", nav_1: "系统", nav_2: "隐私政策", nav_3: "手册", nav_4: "联系我们",
-            breadcrumb: "隐私政策", page_title: "隐私政策", page_subtitle: "与文件聊天系统相关的文件", doc_desc: "如下：",
-            doc_1: "个人数据保护条例 2020", doc_2: "聊天系统数据安全管理公告 2022", doc_3: "个人数据保护法 2019 (PDPA)", doc_4: "内部文件上传与共享手册",
-            footer_col1: "关于", f_link1: "介绍", f_link2: "安全", f_link3: "结构",
-            footer_col3: "联系方式", f_address: "曼谷 样本路 123号 10000",
-            legal_1: "数据披露", legal_2: "隐私政策", btn_reset: "重置 Cookie",
-            lang_title: "语言", access_title: "无障碍", access_font: "字体大小", access_contrast: "高对比度",
-            cookie_notice_title: "Cookie", cookie_notice_desc: "我们使用 Cookie 以确保网站顺利运行。",
-            cookie_btn_settings: "Cookie 设置", cookie_btn_accept: "全部接受", cookie_title: "Cookie 设置", cookie_desc: "启用或禁用特定的 Cookie。",
-            cookie_req_title: "绝对必要", cookie_req_desc: "系统运行所必需。", cookie_stat_title: "分析", cookie_stat_desc: "帮助我们改进系统。",
-            btn_cancel: "取消", btn_save: "保存",
-            sys_login_title: "Document System", sys_login_desc: "请确认您的身份以验证访问权限 (Smart Login)", sys_btn_login: "登录", sys_menu_subtitle: "请选择您要查看的项目", sys_path_home: "首页"
+    // ฟังก์ชันจัดการการแปลภาษาผ่าน Google Translate
+    window.changeLang = function(googleLangCode, displayCode, btn) {
+        // อัปเดต UI ปุ่มและ Badge
+        const badge = document.getElementById('langTextBadge');
+        if(badge) {
+            badge.innerText = displayCode;
+            badge.style.display = "flex";
         }
-    };
-    window.changeLang = function(langCode, btn) {
         document.querySelectorAll('#langModal .option-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.querySelectorAll('[data-i18n]').forEach(elem => {
-            const key = elem.getAttribute('data-i18n');
-            if(translations[langCode][key]) elem.innerHTML = translations[langCode][key];
-        });
         document.getElementById('langModal').style.display = 'none';
+
+        // สั่ง Google Translate ให้ทำงาน
+        let selectField = document.querySelector(".goog-te-combo");
+        if (selectField) {
+            selectField.value = googleLangCode;
+            selectField.dispatchEvent(new Event("change"));
+        } else {
+            console.log("ระบบแปลภาษายังโหลดไม่เสร็จ");
+        }
     }
 
     // ----------------------------------------------------
