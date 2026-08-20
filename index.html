@@ -66,7 +66,7 @@
         padding: 15px 5%; background-color: transparent; border-bottom: 1px solid rgba(0,0,0,0.05); width: 100%;
     }
     .logo-container { display: flex; align-items: center; gap: 15px; }
-    /* ลบกรอบสีชมพู ปรับให้เป็นรูปภาพโปร่งใสตามปกติ */
+    /* ลบกรอบสีชมพู ปรับให้เป็นรูปภาพโปร่งใสตามปกติ ใหญ่เห็นชัดแต่ไม่ล้น */
     .logo-img { height: 65px; width: auto; max-width: 250px; border: none; object-fit: contain; background: transparent; }
 
     .nav-links { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
@@ -414,8 +414,8 @@
   <!-- ================== HEADER ================== -->
   <header>
       <div class="logo-container">
-          <!-- ใช้แค่รูปภาพโลโก้อย่างเดียว -->
-          <img src="https://i.postimg.cc/jdq1yJxN/Docum.png" alt="Logo" class="logo-img">
+          <!-- โลโก้โปร่งใส ไม่มีกรอบ -->
+          <img src="https://i.postimg.cc/hvWpwkgG/Docum.png" alt="Logo" class="logo-img">
       </div>
 
       <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: flex-end;">
@@ -430,14 +430,14 @@
               <!-- 1. ปุ่ม Aa -->
               <button class="tool-btn" onclick="document.getElementById('accessModal').style.display='flex'">Aa</button>
               
-              <!-- 2. ปุ่มเปลี่ยนภาษา (โลก) เอาอักษรทับออกแล้ว -->
+              <!-- 2. ปุ่มเปลี่ยนภาษา (โลก) -->
               <button class="tool-btn" onclick="document.getElementById('langModal').style.display='flex'">
                   <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                   </svg>
               </button>
 
-              <!-- 3. ปุ่มออกจากระบบ (ถูกซ่อนไว้ในตอนแรก จะโชว์เมื่อล็อกอินสำเร็จ) -->
+              <!-- 3. ปุ่มออกจากระบบ -->
               <button class="tool-btn" id="logoutHeaderBtn" onclick="logoutSystem()" title="ออกจากระบบ" style="display: none; color: var(--apple-red); margin-left: 5px;">
                   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -463,7 +463,7 @@
           </div>
       </div>
 
-      <!-- Login Box (หน้าล็อกอินไร้กรอบเต็มจอ) -->
+      <!-- Login Box -->
       <div class="system-container" id="loginBox">
         <h2 data-i18n="sys_login_title">Document System</h2>
         <p data-i18n="sys_login_desc">กรุณาระบุตัวตนเพื่อตรวจสอบสิทธิ์การเข้าถึง (Smart Login)</p>
@@ -473,28 +473,25 @@
         
         <input type="text" id="studentId" placeholder="ระบุชื่อ หรือรหัสประจำตัว..." required autocomplete="off">
         
-        <!-- ส่วน Cloudflare Turnstile ตรวจจับบอท (คีย์ของจริง) -->
+        <!-- ส่วน Cloudflare Turnstile -->
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
             <div class="cf-turnstile" data-sitekey="0x4AAAAAAEUke67A2otQ6JbL"></div>
         </div>
 
         <button class="sys-btn btn-login" onclick="checkData()" data-i18n="sys_btn_login">เข้าสู่ระบบ</button>
         
-        <!-- ข้อความแจ้งเตือนบอทแบบกึ่งกลาง ไม่มีกรอบและอีโมจิ -->
         <p id="errorMsg" style="color: var(--apple-red); display: none; margin-top: 15px; font-weight: 500; text-align: center; font-size: 15px;">
             ระบบรักษาความปลอดภัย<br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ
         </p>
       </div>
 
-      <!-- Menu Box (โฟลเดอร์/ไฟล์) แบบมีกล่องขาวปกติ -->
+      <!-- Menu Box -->
       <div class="system-container" id="menuBox" style="display: none;">
         <div class="header-toolbar" style="margin-bottom: 15px;">
-            <!-- แก้ไขให้ flex อนุญาตให้ข้อความหดตัวและปัดบรรทัดได้ -->
             <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
                 <h3 id="menuTitle" style="margin: 0; text-align: left; word-break: break-word; white-space: normal; line-height: 1.3;"></h3>
             </div>
             
-            <!-- เมนูด้านบนขวา (แจ้งเตือน, ตารางเรียน) -->
             <div class="top-right-icons" id="mainTopIcons" style="display: none;">
               <div class="tr-icon" onclick="openCalendarModal()" title="แจ้งเตือนความจำ">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -516,7 +513,6 @@
         <div id="menuClock" style="display:none; font-size: 13px; color: var(--apple-text-muted); margin-bottom: 20px; text-align: center;"></div>
 
         <div class="header-toolbar">
-            <!-- แก้ไข Flex Box ตรงนี้เพื่อให้ข้อความยาวๆ สามารถขึ้นบรรทัดใหม่ได้ และไม่ดันหน้าจอล้น -->
             <div style="display: flex; align-items: flex-start; flex: 1; min-width: 0;">
                 <button id="navBackBtn" onclick="navigateUp()" style="display:none; background: transparent; border: none; color: var(--apple-blue); cursor: pointer; padding: 0 8px 0 0; flex-shrink: 0; margin-top: 2px;" title="ย้อนกลับ">
                     <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -532,7 +528,6 @@
                 <svg viewBox="0 0 24 24" width="20" height="20" stroke="#86868b" stroke-width="2" fill="none" style="position: absolute; right: 12px; pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
             
-            <!-- เมนูจัดเรียงฉบับดั้งเดิม 100% -->
             <div class="options-btn-wrap-relative">
               <button class="options-btn" onclick="toggleOptionsMenu(event)">
                 <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -610,14 +605,10 @@
   <!-- 2. View: นโยบายการคุ้มครองข้อมูลส่วนบุคคล -->
   <main id="policyView" class="view-section">
       <div class="policy-container">
-          <!-- แสดงเฉพาะคำว่า นโยบายการคุ้มครองข้อมูลส่วนบุคคล ตามคำขอ -->
           <div class="breadcrumb" data-i18n="breadcrumb">นโยบายการคุ้มครองข้อมูลส่วนบุคคล</div>
-          
           <h1 data-i18n="page_title">นโยบายการคุ้มครองข้อมูลส่วนบุคคล</h1>
           <h2 data-i18n="page_subtitle">เอกสารที่เกี่ยวข้องกับระบบแชทงานเอกสาร</h2>
           <p style="margin-bottom: 20px; font-size:16px;">มีดังนี้</p>
-          
-          <!-- ลิงก์มีเส้นใต้สีชมพู (จุฬา Style) -->
           <ul class="document-list">
               <li><a href="#" data-i18n="doc_1">ข้อบังคับว่าด้วย การคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2563</a></li>
               <li><a href="#" data-i18n="doc_2">ประกาศเรื่อง การจัดการความปลอดภัยของข้อมูลในระบบแชท พ.ศ. 2565</a></li>
@@ -627,13 +618,11 @@
       </div>
   </main>
 
-  <!-- 3. View: คู่มือการใช้งาน (สอนการใช้งาน + วิดีโอ YouTube) -->
+  <!-- 3. View: คู่มือการใช้งาน -->
   <main id="manualView" class="view-section">
       <div class="policy-container">
           <div class="breadcrumb" data-i18n="nav_3">คู่มือการใช้งาน</div>
           <h1>สอนการใช้งานระบบ</h1>
-          
-          <!-- กล่องข้อความอธิบายด้านบน -->
           <div style="background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.05); padding: 25px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
               <h3 style="margin-top:0; margin-bottom: 10px; color: var(--pink-primary);">วิธีการใช้งานระบบเบื้องต้น</h3>
               <p style="margin-bottom: 10px; font-size: 15px;">คุณสามารถแก้ไขเนื้อหาส่วนนี้ได้ในโค้ด (ใส่ตัวอย่างไว้ให้ก่อน)</p>
@@ -642,8 +631,6 @@
                   <li>ขั้นตอนที่ 2: ค้นหาและดูไฟล์จากหน้าหลัก</li>
               </ul>
           </div>
-
-          <!-- วิดีโอ YouTube ด้านล่าง (ใส่ลิงก์ของคุณที่ src="..." ได้เลย) -->
           <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
               <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="สอนการใช้งานระบบ" allowfullscreen></iframe>
           </div>
@@ -653,18 +640,14 @@
   <!-- ================== FOOTER ================== -->
   <footer id="footerArea">
       <div class="footer-grid">
-          <!-- คอลัมน์ที่ 1: เกี่ยวกับระบบ -->
           <div class="footer-col">
               <h3 data-i18n="footer_col1">เกี่ยวกับระบบ</h3>
               <ul>
-                  <!-- คลิกลิงก์เพื่อเปิด Pop-up ข้อความ -->
                   <li><a href="#" onclick="openInfoModal('แนะนำระบบ', '<p>เนื้อหาแนะนำระบบ (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link1">แนะนำระบบ</a></li>
                   <li><a href="#" onclick="openInfoModal('ความปลอดภัย', '<p>เนื้อหาความปลอดภัย (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link2">ความปลอดภัย</a></li>
                   <li><a href="#" onclick="openInfoModal('โครงสร้างระบบ', '<p>เนื้อหาโครงสร้างระบบ (แก้ไขได้ในโค้ด)</p>')" data-i18n="f_link3">โครงสร้างระบบ</a></li>
               </ul>
           </div>
-          
-          <!-- คอลัมน์ที่ 2: ติดต่อเรา -->
           <div class="footer-col">
               <h3 data-i18n="footer_col3">ติดต่อเรา</h3>
               <ul style="color: #bbb; font-size: 14px; line-height: 2;">
@@ -686,19 +669,14 @@
   </footer>
 
   <!-- ================== MODALS (UI ทั่วไป) ================== -->
-  
-  <!-- Info Modal (แสดงข้อมูลจาก Footer) -->
   <div class="ui-modal" id="infoModal">
       <div class="ui-modal-content" style="max-width: 600px;">
           <button class="ui-close-btn" onclick="document.getElementById('infoModal').style.display='none'">&times;</button>
           <h3 id="infoModalTitle" style="color: var(--pink-primary); border-bottom: 2px solid #eee; padding-bottom: 10px;">หัวข้อ</h3>
-          <div id="infoModalContent" style="font-size: 16px; color: #444; line-height: 1.6; word-break: break-word; margin-top: 15px;">
-              <!-- ข้อความจะถูกแทรกที่นี่ -->
-          </div>
+          <div id="infoModalContent" style="font-size: 16px; color: #444; line-height: 1.6; word-break: break-word; margin-top: 15px;"></div>
       </div>
   </div>
 
-  <!-- Cookie Pop-up -->
   <div class="cookie-popup" id="cookieNotice">
       <h4 data-i18n="cookie_notice_title">คุกกี้บนเว็บไซต์นี้</h4>
       <p data-i18n="cookie_notice_desc">เราใช้คุกกี้ที่จำเป็นเพื่อให้เว็บไซต์และระบบทำงานได้อย่างราบรื่น</p>
@@ -708,13 +686,11 @@
       </div>
   </div>
 
-  <!-- Modal ตั้งค่าคุกกี้ -->
   <div class="ui-modal" id="cookieSettingsModal">
       <div class="ui-modal-content">
           <button class="ui-close-btn" onclick="document.getElementById('cookieSettingsModal').style.display='none'">&times;</button>
           <h3 data-i18n="cookie_title">การตั้งค่าคุกกี้</h3>
           <p data-i18n="cookie_desc">คุณสามารถเลือกเปิดหรือปิดการใช้งานคุกกี้แต่ละประเภทได้ตามความต้องการ</p>
-          
           <div class="cookie-option">
               <div class="cookie-text">
                   <strong data-i18n="cookie_req_title">คุกกี้ที่จำเป็นอย่างยิ่ง</strong>
@@ -729,7 +705,6 @@
               </div>
               <label class="toggle-switch"><input type="checkbox" id="analyticsCookie" checked><span class="toggle-slider"></span></label>
           </div>
-
           <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
               <button class="btn-cookie btn-settings" onclick="document.getElementById('cookieSettingsModal').style.display='none'" data-i18n="btn_cancel">ยกเลิก</button>
               <button class="btn-cookie btn-accept" onclick="saveCookieSettings()" data-i18n="btn_save">บันทึกการตั้งค่า</button>
@@ -737,7 +712,7 @@
       </div>
   </div>
 
-  <!-- Modal เปลี่ยนภาษา -->
+  <!-- Modal เปลี่ยนภาษา พร้อมอัปเดตการแสดงผลไฟล์อัตโนมัติ -->
   <div class="ui-modal" id="langModal">
       <div class="ui-modal-content" style="max-width: 350px;">
           <button class="ui-close-btn" onclick="document.getElementById('langModal').style.display='none'">&times;</button>
@@ -750,7 +725,6 @@
       </div>
   </div>
 
-  <!-- Modal ตัวช่วยการเข้าถึง (Aa) -->
   <div class="ui-modal" id="accessModal">
       <div class="ui-modal-content" style="max-width: 380px;">
           <button class="ui-close-btn" onclick="document.getElementById('accessModal').style.display='none'">&times;</button>
@@ -770,7 +744,6 @@
       </div>
   </div>
 
-  <!-- Modal รหัสผ่านแบบ Custom (แทนที่ prompt เบราว์เซอร์) -->
   <div class="ui-modal" id="passwordModal" style="z-index: 10002;">
       <div class="ui-modal-content" style="max-width: 350px; text-align: center; padding: 25px;">
           <h3 style="color: #1d1d1f; margin-bottom: 10px; font-size: 20px;" data-i18n="pwd_title">กรุณาใส่รหัสผ่าน</h3>
@@ -783,11 +756,8 @@
       </div>
   </div>
 
-  <!-- Toast Notification สำหรับแจ้งเตือน (แทน alert) -->
   <div id="toast"></div>
 
-
-  <!-- ================== MODALS (ของ Firebase DocumentSystem) ================== -->
   <!-- Calendar Modal -->
   <div class="sys-modal-overlay" id="calendarModalOverlay">
     <div class="calendar-modal">
@@ -795,8 +765,8 @@
             <div style="display: flex; align-items: center;">
                 <h2 id="calendarMonthTitle" style="color:#000;">กรกฎาคม 2569</h2>
                 <div class="calendar-nav">
-                    <button onclick="prevMonth()" title="เดือนก่อนหน้า"><svg viewBox="0 0 24 24" width="18" height="18" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
-                    <button onclick="nextMonth()" title="เดือนถัดไป"><svg viewBox="0 0 24 24" width="18" height="18" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                    <button onclick="prevMonth()"><svg viewBox="0 0 24 24" width="18" height="18" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                    <button onclick="nextMonth()"><svg viewBox="0 0 24 24" width="18" height="18" stroke="#1d1d1f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                     <button onclick="currentMonth()" style="width: auto; padding: 0 12px; font-size: 13px; border-radius: 12px;">วันนี้</button>
                 </div>
             </div>
@@ -806,7 +776,6 @@
     </div>
   </div>
 
-  <!-- Event Detail Modal -->
   <div class="sys-modal-overlay" id="eventDetailOverlay">
     <div class="event-detail-modal">
         <button class="sys-close-btn" style="position: absolute; top: 15px; right: 15px;" onclick="closeEventDetail()">×</button>
@@ -824,7 +793,6 @@
     </div>
   </div>
 
-  <!-- Schedule Modal -->
   <div class="sys-modal-overlay" id="scheduleModalOverlay">
     <div class="schedule-modal">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -834,7 +802,6 @@
         <div id="scheduleContent" style="text-align: center; margin-top: 10px;"></div>
     </div>
   </div>
-
 
   <!-- ================== JAVASCRIPT ================== -->
   <script type="module">
@@ -909,6 +876,21 @@
             const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
             return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + " น.";
         } catch(e) { return ""; }
+    }
+
+    // ฟังก์ชันช่วยแสดงชื่อ 3 ภาษา (ดึงภาษาที่กำลังใช้งานมาพิจารณา)
+    function getLocalizedName(defaultName, metaObj) {
+        const lang = localStorage.getItem('docSystem_lang') || 'TH';
+        if (!metaObj) return defaultName;
+        if (lang === 'EN' && metaObj.titleEN) return metaObj.titleEN;
+        if (lang === 'CN' && metaObj.titleCN) return metaObj.titleCN;
+        return defaultName;
+    }
+    function getLocalizedFileTitle(file) {
+        const lang = localStorage.getItem('docSystem_lang') || 'TH';
+        if (lang === 'EN' && file.titleEN) return file.titleEN;
+        if (lang === 'CN' && file.titleCN) return file.titleCN;
+        return file.title || '-';
     }
 
     window.toggleOptionsMenu = function(e) {
@@ -1009,9 +991,6 @@
     }
     setInterval(updateRealtimeClock, 1000); updateRealtimeClock();
 
-    // ----------------------------------------------------
-    // UI ควบคุมแท็บ, ภาษา, คุกกี้, Scroll, Info Modal และ Popup รหัสผ่านใหม่
-    // ----------------------------------------------------
     window.switchTab = function(tabId, el) {
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
@@ -1032,7 +1011,6 @@
         document.getElementById('infoModal').style.display = 'flex';
     }
 
-    // ฟังก์ชันสร้าง Custom Password Prompt ทำงานแบบ Promise (แทนที่ prompt เดิม)
     window.showPasswordPrompt = function(message) {
         return new Promise((resolve) => {
             const modal = document.getElementById('passwordModal');
@@ -1042,7 +1020,6 @@
             modal.style.display = 'flex';
             input.focus();
 
-            // ดักกดปุ่ม Enter
             const handleKey = function(e) {
                 if (e.key === 'Enter') {
                     input.removeEventListener('keypress', handleKey);
@@ -1064,21 +1041,17 @@
         });
     }
 
-    // ฟังก์ชันตรวจสอบ Auto Login ทันทีเมื่อเปิดเว็บ และโหลดภาษา
     window.onload = function() {
         if(!localStorage.getItem('cookieConsent_DocSystem')) {
             setTimeout(() => { document.getElementById('cookieNotice').style.display = 'block'; }, 1000);
         }
 
-        // โหลดภาษาที่เลือกค้างไว้ หรือค่าเริ่มต้นเป็นไทย (TH)
         let savedLang = localStorage.getItem('docSystem_lang') || 'TH';
         changeLang(savedLang);
 
-        // Auto-Login: ดึงข้อมูล Session จาก LocalStorage
         const savedUser = localStorage.getItem('docSystem_user');
         const savedExpiry = localStorage.getItem('docSystem_expiry');
         if (savedUser && savedExpiry && Date.now() < parseInt(savedExpiry)) {
-            // ถ้า Session ยังไม่หมดอายุ (ภายใน 3 ชม.) ให้เข้าสู่ระบบเลย
             document.getElementById("loginBox").style.display = "none";
             document.getElementById("menuBox").style.display = "block";
             checkData(savedUser);
@@ -1113,7 +1086,6 @@
     window.logoutSystem = function() {
         localStorage.removeItem('docSystem_user');
         localStorage.removeItem('docSystem_expiry');
-        // ภาษาจะยังจำไว้ ไม่รีเซ็ตเพราะเราใช้ localStorage ของภาษาแยกกัน
         location.reload();
     }
 
@@ -1163,20 +1135,20 @@
     };
 
     window.changeLang = function(langCode) {
-        // บันทึกภาษาลง localStorage
         localStorage.setItem('docSystem_lang', langCode);
-        
-        // สลับสถานะปุ่มในเมนู
         document.querySelectorAll('#langModal .option-btn').forEach(b => b.classList.remove('active'));
         const activeBtn = document.getElementById('btnLang' + langCode);
         if (activeBtn) activeBtn.classList.add('active');
         
-        // อัปเดตข้อความบนจอ
         document.querySelectorAll('[data-i18n]').forEach(elem => {
             const key = elem.getAttribute('data-i18n');
             if(translations[langCode] && translations[langCode][key]) elem.innerHTML = translations[langCode][key];
         });
         document.getElementById('langModal').style.display = 'none';
+        
+        if(document.getElementById('menuBox').style.display === 'block') {
+            renderExplorer();
+        }
     }
 
     // ----------------------------------------------------
@@ -1185,11 +1157,9 @@
     window.checkData = async function(autoLoginId = null) {
       let rawId = "";
 
-      // ถ้าระบบจำไว้ (Auto Login) ไม่ต้องเช็คบอท
       if (autoLoginId) {
           rawId = autoLoginId;
       } else {
-          // ล็อกอินปกติ (ต้องกดติ๊กบอท)
           const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
           if (turnstileResponse && !turnstileResponse.value) {
               document.getElementById("errorMsg").innerHTML = "ระบบรักษาความปลอดภัย<br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ";
@@ -1205,7 +1175,6 @@
       try {
         const searchId = rawId.replace(/[\s"']/g, '').toLowerCase();
         
-        // โค้ดดึงข้อมูลลดภาระ (ดึงเฉพาะที่จำเป็นเพื่อยืนยันสิทธิ์ก่อน)
         const q1 = query(collection(db, "jobs"), where("allowedUsers", "array-contains", rawId));
         const q2 = query(collection(db, "jobs"), where("searchableUsers", "array-contains", searchId));
         const qRem = query(collection(db, "reminders"), where("allowedUsers", "array-contains", rawId));
@@ -1234,14 +1203,15 @@
           }
           currentId = matchedId;
           
-          // ดึงโฟลเดอร์ก็ต่อเมื่อผ่านการล็อกอินแล้ว
           const q3 = query(collection(db, "jobs"), where("type", "==", "system_folder"));
           const snap3 = await getDocs(q3);
           snap3.forEach(docSnap => {
               const data = docSnap.data();
               let path = (data.folder || "").trim().replace(/^\/+|\/+$/g, '');
               folderMeta[path] = { 
-                  color: data.color || 'blue', emoji: data.emoji || '', password: data.password || '', isPaused: data.isPaused || false, updatedAt: data.updatedAt || data.createdAt || null 
+                  color: data.color || 'blue', emoji: data.emoji || '', password: data.password || '', isPaused: data.isPaused || false, 
+                  titleEN: data.titleEN || '', titleCN: data.titleCN || '',
+                  updatedAt: data.updatedAt || data.createdAt || null 
               };
           });
           
@@ -1252,14 +1222,12 @@
               }
           });
 
-          // บันทึก Log เข้าระบบ เฉพาะกรณีไม่ได้ Auto Login (ลดปริมาณ Log ซ้ำซ้อน)
           if (!autoLoginId) {
               const logsCol = collection(db, "access_logs");
               const newLog = await addDoc(logsCol, { studentId: currentId, loginTime: serverTimestamp(), logoutTime: null });
               currentLogId = newLog.id;
           }
 
-          // บันทึก Session เก็บไว้ 3 ชั่วโมง
           localStorage.setItem('docSystem_user', currentId);
           localStorage.setItem('docSystem_expiry', Date.now() + (3 * 60 * 60 * 1000));
 
@@ -1267,16 +1235,14 @@
           document.getElementById("menuBox").style.display = "block";
           document.getElementById("menuTitle").innerText = `รหัสผู้ใช้งาน: ${currentId}`;
           document.getElementById("mainTopIcons").style.display = "flex";
-          document.getElementById("logoutHeaderBtn").style.display = "flex"; // แสดงปุ่มเมื่อล็อกอินผ่าน
+          document.getElementById("logoutHeaderBtn").style.display = "flex"; 
           updateReminderBadge();
 
           currentPath = ""; renderExplorer();
         } else { 
-            // กรณีเข้าสู่ระบบไม่ผ่าน ให้ลบความจำเดิมทิ้งถ้ามี
             localStorage.removeItem('docSystem_user');
             localStorage.removeItem('docSystem_expiry');
             
-            // ให้แสดงหน้าล็อกอินปกติ
             document.getElementById("loginBox").style.display = "block";
             document.getElementById("menuBox").style.display = "none";
 
@@ -1284,15 +1250,11 @@
             document.getElementById("errorMsg").style.display = "block"; 
         }
       } catch (error) { 
-          // ใช้ showToastAlert เพื่อให้เด้งข้อความสวยๆ แทน alert ธรรมดา
           console.error(error);
           showToastAlert("เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล"); 
       }
     }
 
-    // ----------------------------------------------------
-    // ฟังก์ชันย่อยของระบบเอกสาร (ดึงมาจากต้นฉบับ 100%)
-    // ----------------------------------------------------
     window.updateReminderBadge = function() {
         const badge = document.getElementById("reminderBadgeCount");
         const pendingCount = userReminders.filter(r => r.status !== 'Complete').length;
@@ -1449,7 +1411,7 @@
 
             snap3.forEach(docSnap => {
                 const data = docSnap.data(); let path = (data.folder || "").trim().replace(/^\/+|\/+$/g, '');
-                folderMeta[path] = { color: data.color || 'blue', emoji: data.emoji || '', password: data.password || '', isPaused: data.isPaused || false, updatedAt: data.updatedAt || data.createdAt || null };
+                folderMeta[path] = { color: data.color || 'blue', emoji: data.emoji || '', password: data.password || '', isPaused: data.isPaused || false, titleEN: data.titleEN || '', titleCN: data.titleCN || '', updatedAt: data.updatedAt || data.createdAt || null };
             });
             
             allFiles.forEach(file => {
@@ -1478,13 +1440,12 @@
         return false;
     }
 
-    // เปลี่ยนมาใช้ async await กับ Modal Custom แทน prompt เบราว์เซอร์
     window.checkTreeFolderPassword = async function(e, folderPath, pwd) {
         if (!pwd) return;
         if (!unlockedItems.has(folderPath)) {
             e.preventDefault(); 
             let input = await showPasswordPrompt("โฟลเดอร์นี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
-            if (input === null) return; // กดยกเลิก
+            if (input === null) return; 
             if (input !== pwd) { showToastAlert("รหัสผ่านไม่ถูกต้อง"); return; }
             unlockedItems.add(folderPath); renderExplorer();
         }
@@ -1500,7 +1461,8 @@
           let root = { name: "Root", path: "", isFolder: true, children: {}, files: [] };
           
           userFiles.forEach((file, index) => {
-              if (query !== "" && file.title && !file.title.toLowerCase().includes(query)) return;
+              const fileTitle = getLocalizedFileTitle(file);
+              if (query !== "" && fileTitle && !fileTitle.toLowerCase().includes(query)) return;
               let checkPath = ""; let partsForCheck = file.normalizedPath.split('/'); let isParentLockedResult = false;
               for (let i = 0; i < partsForCheck.length; i++) { 
                   checkPath = checkPath === "" ? partsForCheck[i] : checkPath + "/" + partsForCheck[i];
@@ -1517,7 +1479,7 @@
                       current = current.children[part];
                   });
               }
-              current.files.push({ file: file, index: index });
+              current.files.push({ file: file, index: index, displayTitle: fileTitle });
           });
 
           if (query === "") {
@@ -1535,8 +1497,8 @@
           let folderCounter = 0;
           function generateTreeHTML(node) {
               let html = "";
-              let subFolders = Object.values(node.children).sort((a,b) => a.name.localeCompare(b.name));
-              let subFiles = node.files.sort((a,b) => a.file.title.localeCompare(b.file.title));
+              let subFolders = Object.values(node.children).sort((a,b) => getLocalizedName(a.name, a.meta).localeCompare(getLocalizedName(b.name, b.meta)));
+              let subFiles = node.files.sort((a,b) => a.displayTitle.localeCompare(b.displayTitle));
 
               subFolders.forEach(folder => {
                   folderCounter++; let folderId = "tree-folder-" + folderCounter;
@@ -1551,6 +1513,7 @@
                   
                   let safePath = folder.path.replace(/'/g, "\\'"); let safePwd = pwd.replace(/'/g, "\\'");
                   let clickAction = isPaused ? `showPausedPopup(event)` : `checkTreeFolderPassword(event, '${safePath}', '${safePwd}')`;
+                  let displayName = getLocalizedName(folder.name, folder.meta);
 
                   let childrenHTML = (!isLocked && !isPaused) ? generateTreeHTML(folder) : "";
 
@@ -1558,7 +1521,7 @@
                   <li class="tree-item">
                       <input type="checkbox" id="${folderId}" class="tree-toggle" ${!isLocked && !isPaused ? "checked" : ""} />
                       <label for="${folderId}" class="tree-label" onclick="${clickAction}">
-                          ${iconDisplay} <span style="white-space: normal; word-break: break-word; line-height: 1.4; padding: 4px 0; flex: 1;">${folder.name}</span> ${lockIcon}
+                          ${iconDisplay} <span style="white-space: normal; word-break: break-word; line-height: 1.4; padding: 4px 0; flex: 1;">${displayName}</span> ${lockIcon}
                       </label>
                       <div class="tree-children-wrapper"><ul class="tree-children">${childrenHTML}</ul></div>
                   </li>`;
@@ -1575,7 +1538,7 @@
                   html += `
                   <li class="tree-item">
                       <div class="file-item" onclick="${clickAction}">
-                          ${iconDisplay} <span style="white-space: normal; word-break: break-word; line-height: 1.4; padding: 4px 0; flex: 1;">${file.title}</span> ${lockIcon}
+                          ${iconDisplay} <span style="white-space: normal; word-break: break-word; line-height: 1.4; padding: 4px 0; flex: 1;">${f.displayTitle}</span> ${lockIcon}
                       </div>
                   </li>`;
               });
@@ -1599,24 +1562,32 @@
           let allFolderNames = new Set();
           Object.keys(folderMeta).forEach(path => {
               if (!path) return; if (isParentLocked(path)) return;
-              let parts = path.split('/'); let folderName = parts[parts.length - 1];
-              if (folderName.toLowerCase().includes(query)) allFolderNames.add(path);
+              let meta = folderMeta[path];
+              let folderName = path.split('/').pop();
+              let displayName = getLocalizedName(folderName, meta);
+              
+              if (displayName.toLowerCase().includes(query)) allFolderNames.add(path);
           });
           
           folderList = Array.from(allFolderNames).map(targetPath => {
               let parts = targetPath.split('/'); let folderName = parts[parts.length - 1];
               let meta = folderMeta[targetPath] || { color: 'blue', emoji: '', password: '', isPaused: false, updatedAt: null };
-              return { name: folderName, targetPath, meta, isFolder: true };
+              let displayName = getLocalizedName(folderName, meta);
+              return { name: folderName, displayTitle: displayName, targetPath, meta, isFolder: true };
           });
 
           userFiles.forEach(file => {
-              if (file.title && file.title.toLowerCase().includes(query)) {
+              const fileTitle = getLocalizedFileTitle(file);
+              if (fileTitle && fileTitle.toLowerCase().includes(query)) {
                   let checkPath = ""; let partsForCheck = file.normalizedPath.split('/'); let isParentLockedResult = false;
                   for (let i = 0; i < partsForCheck.length; i++) { 
                       checkPath = checkPath === "" ? partsForCheck[i] : checkPath + "/" + partsForCheck[i];
                       let m = folderMeta[checkPath]; if (m && m.password && !unlockedItems.has(checkPath)) { isParentLockedResult = true; break; }
                   }
-                  if (!isParentLockedResult) filesToRender.push(file);
+                  if (!isParentLockedResult) {
+                      file.displayTitle = fileTitle;
+                      filesToRender.push(file);
+                  }
               }
           });
 
@@ -1626,6 +1597,7 @@
           let foldersInCurrentPath = new Set(); 
           userFiles.forEach(file => {
               let fp = file.normalizedPath;
+              file.displayTitle = getLocalizedFileTitle(file);
               if (fp === currentPath) filesToRender.push(file);
               else if (fp.startsWith(currentPath ? currentPath + "/" : "")) {
                   let immediateSubfolder = fp.substring(currentPath ? currentPath.length + 1 : 0).split('/')[0];
@@ -1636,17 +1608,24 @@
           folderList = Array.from(foldersInCurrentPath).map(folderName => {
               let targetPath = currentPath ? `${currentPath}/${folderName}` : folderName;
               let meta = folderMeta[targetPath] || { color: 'blue', emoji: '', password: '', isPaused: false, updatedAt: null };
-              return { name: folderName, targetPath, meta, isFolder: true };
+              let displayName = getLocalizedName(folderName, meta);
+              return { name: folderName, displayTitle: displayName, targetPath, meta, isFolder: true };
           });
 
           const navBackBtn = document.getElementById("navBackBtn"); const pathTitleEl = document.getElementById("currentPathTitle");
           if (currentPath === "") { if(navBackBtn) navBackBtn.style.display = "none"; if(pathTitleEl) pathTitleEl.innerText = "หน้าหลัก"; } 
-          else { if(navBackBtn) navBackBtn.style.display = "flex"; let parts = currentPath.split('/'); if(pathTitleEl) pathTitleEl.innerText = parts[parts.length - 1]; }
+          else { 
+              if(navBackBtn) navBackBtn.style.display = "flex"; 
+              let parts = currentPath.split('/'); 
+              let lastPath = parts[parts.length - 1];
+              let lastMeta = folderMeta[currentPath];
+              if(pathTitleEl) pathTitleEl.innerText = getLocalizedName(lastPath, lastMeta); 
+          }
       }
       
       const sortData = (a, b, isFolder) => {
           let valA, valB;
-          if (appSortMode === 'name') { valA = (isFolder ? a.name : a.title).toLowerCase(); valB = (isFolder ? b.name : b.title).toLowerCase(); } 
+          if (appSortMode === 'name') { valA = a.displayTitle.toLowerCase(); valB = b.displayTitle.toLowerCase(); } 
           else if (appSortMode === 'type') { valA = isFolder ? 'folder' : (a.type || ''); valB = isFolder ? 'folder' : (b.type || ''); } 
           else if (appSortMode === 'date') { valA = getSortDate(a, isFolder); valB = getSortDate(b, isFolder); } 
           else if (appSortMode === 'size') { valA = isFolder ? 0 : (a.url ? a.url.length : 0); valB = isFolder ? 0 : (b.url ? b.url.length : 0); }
@@ -1667,7 +1646,7 @@
 
           html += `
             <div class="grid-item" onclick="${clickAction}">
-              <div class="grid-icon">${iconDisplay}</div><div class="grid-name">${folder.name}</div><div class="grid-time">${timeStr}</div>${lockHtml}
+              <div class="grid-icon">${iconDisplay}</div><div class="grid-name">${folder.displayTitle}</div><div class="grid-time">${timeStr}</div>${lockHtml}
             </div>`;
       });
       
@@ -1682,7 +1661,7 @@
 
           html += `
             <div class="grid-item" onclick="${clickAction}">
-              <div class="grid-icon">${iconDisplay}</div><div class="grid-name">${file.title}</div><div class="grid-time">${fileTimeStr}</div>${lockHtml}
+              <div class="grid-icon">${iconDisplay}</div><div class="grid-name">${file.displayTitle}</div><div class="grid-time">${fileTimeStr}</div>${lockHtml}
             </div>`;
       });
       
@@ -1693,7 +1672,6 @@
       document.getElementById("itemList").innerHTML = html;
     }
 
-    // เปลี่ยนมาใช้ async await กับ Modal Custom แทน prompt เบราว์เซอร์
     window.openFolder = async function(encodedFolderName, absolutePath = null) {
       const folderName = decodeURIComponent(encodedFolderName);
       let targetPath = currentPath === "" ? folderName : currentPath + "/" + folderName;
@@ -1702,7 +1680,7 @@
       
       if (meta && meta.password && !unlockedItems.has(targetPath)) {
           let pwd = await showPasswordPrompt("โฟลเดอร์นี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
-          if (pwd === null) return; // กดยกเลิก
+          if (pwd === null) return; 
           if (pwd !== meta.password) { showToastAlert("รหัสผ่านไม่ถูกต้อง"); return; }
           unlockedItems.add(targetPath);
       }
@@ -1718,18 +1696,17 @@
        renderExplorer();
     }
 
-    // เปลี่ยนมาใช้ async await กับ Modal Custom แทน prompt เบราว์เซอร์
     window.openFile = async function(index) {
       const file = userFiles[index];
       if (file.password && !unlockedItems.has(file.id)) {
           let pwd = await showPasswordPrompt("เอกสารนี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
-          if (pwd === null) return; // กดยกเลิก
+          if (pwd === null) return; 
           if (pwd !== file.password) { showToastAlert("รหัสผ่านไม่ถูกต้อง"); return; }
           unlockedItems.add(file.id);
       }
       
       document.getElementById("menuBox").style.display = "none"; document.getElementById("contentBox").style.display = "block";
-      document.getElementById("displayName").innerText = file.title;
+      document.getElementById("displayName").innerText = getLocalizedFileTitle(file);
       
       const watermarkEl = document.getElementById("watermarkText");
       if (file.showWatermark === false) watermarkEl.style.display = "none";
@@ -1753,7 +1730,6 @@
         blocker.style.display = "block"; viewer.innerHTML = `<iframe class="pdf-viewer" src="${file.url}#toolbar=0&navpanes=0&scrollbar=0" allowfullscreen></iframe>`;
       }
       
-      // ส่งแค่ file.id ไปตรวจสอบดาวน์โหลด
       checkDownloadStatus(file.id);
     }
 
