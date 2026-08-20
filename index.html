@@ -52,7 +52,7 @@
     body.high-contrast .system-container p {
         color: #fff !important;
     }
-    body.high-contrast input[type="text"] {
+    body.high-contrast input[type="text"], body.high-contrast input[type="password"] {
         background-color: #333;
         color: #fff;
         border-color: #555;
@@ -186,11 +186,11 @@
     .system-container h3 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; margin-top: 0; color: var(--apple-text-main); }
     .system-container p { color: var(--apple-text-muted); font-size: 15px; margin-bottom: 24px; }
     
-    .system-container input[type="text"] { 
+    .system-container input[type="text"], #passwordModalInput { 
       width: 100%; padding: 16px; margin-bottom: 20px; background-color: #f5f5f7; border: 1px solid transparent; border-radius: 14px; font-size: 17px; font-family: inherit; text-align: center; color: var(--apple-text-main); box-sizing: border-box; transition: all 0.2s ease;
     }
-    .system-container input[type="text"]:focus { background-color: #fff; border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15); outline: none; }
-    .system-container input::placeholder { color: #a1a1a6; }
+    .system-container input[type="text"]:focus, #passwordModalInput:focus { background-color: #fff; border-color: var(--apple-blue); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15); outline: none; }
+    .system-container input::placeholder, #passwordModalInput::placeholder { color: #a1a1a6; }
     
     .sys-btn { 
       width: 100%; padding: 16px; background: var(--apple-blue); color: white; border: none; border-radius: 14px; font-size: 17px; font-family: inherit; cursor: pointer; font-weight: 600; margin-bottom: 12px; transition: transform 0.1s, background 0.2s, opacity 0.2s;
@@ -741,9 +741,9 @@
           <button class="ui-close-btn" onclick="document.getElementById('langModal').style.display='none'">&times;</button>
           <h3 data-i18n="lang_title">ภาษา (Language)</h3>
           <div class="option-grid">
-              <button class="option-btn active" onclick="changeLang('TH', this)">ไทย</button>
-              <button class="option-btn" onclick="changeLang('EN', this)">English</button>
-              <button class="option-btn" onclick="changeLang('CN', this)">中文</button>
+              <button class="option-btn active" id="btnLangTH" onclick="changeLang('TH')">ไทย</button>
+              <button class="option-btn" id="btnLangEN" onclick="changeLang('EN')">English</button>
+              <button class="option-btn" id="btnLangCN" onclick="changeLang('CN')">中文</button>
           </div>
       </div>
   </div>
@@ -764,6 +764,19 @@
           <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-size: 14px; font-weight: bold;" data-i18n="access_contrast">โหมดสีตัดกันสูง</span>
               <label class="toggle-switch"><input type="checkbox" id="highContrastToggle" onchange="toggleContrast()"><span class="toggle-slider"></span></label>
+          </div>
+      </div>
+  </div>
+
+  <!-- Modal รหัสผ่านแบบ Custom (แทนที่ prompt เบราว์เซอร์) -->
+  <div class="ui-modal" id="passwordModal" style="z-index: 10002;">
+      <div class="ui-modal-content" style="max-width: 350px; text-align: center; padding: 25px;">
+          <h3 style="color: #1d1d1f; margin-bottom: 10px; font-size: 20px;" data-i18n="pwd_title">กรุณาใส่รหัสผ่าน</h3>
+          <p id="passwordModalMsg" style="font-size: 14px; color: #86868b; margin-bottom: 20px;">โฟลเดอร์หรือเอกสารนี้ถูกล็อก</p>
+          <input type="password" id="passwordModalInput" placeholder="รหัสผ่าน">
+          <div style="display: flex; gap: 10px; justify-content: center;">
+              <button class="sys-btn" style="background: #e5e5ea; color: #1d1d1f; flex: 1; margin-bottom: 0;" onclick="passwordModalCancel()" data-i18n="btn_cancel">ยกเลิก</button>
+              <button class="sys-btn" style="background: var(--apple-blue); flex: 1; margin-bottom: 0;" onclick="passwordModalSubmit()" data-i18n="btn_confirm">ตกลง</button>
           </div>
       </div>
   </div>
@@ -995,7 +1008,7 @@
     setInterval(updateRealtimeClock, 1000); updateRealtimeClock();
 
     // ----------------------------------------------------
-    // UI ควบคุมแท็บ, ภาษา, คุกกี้, Scroll, Info Modal
+    // UI ควบคุมแท็บ, ภาษา, คุกกี้, Scroll, Info Modal และ Popup รหัสผ่านใหม่
     // ----------------------------------------------------
     window.switchTab = function(tabId, el) {
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
@@ -1017,11 +1030,47 @@
         document.getElementById('infoModal').style.display = 'flex';
     }
 
-    // ฟังก์ชันตรวจสอบ Auto Login ทันทีเมื่อเปิดเว็บ
+    // ฟังก์ชันสร้าง Custom Password Prompt ทำงานแบบ Promise (แทนที่ prompt เดิม)
+    window.showPasswordPrompt = function(message) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('passwordModal');
+            const input = document.getElementById('passwordModalInput');
+            document.getElementById('passwordModalMsg').innerText = message;
+            input.value = '';
+            modal.style.display = 'flex';
+            input.focus();
+
+            // ดักกดปุ่ม Enter
+            const handleKey = function(e) {
+                if (e.key === 'Enter') {
+                    input.removeEventListener('keypress', handleKey);
+                    window.passwordModalSubmit();
+                }
+            };
+            input.addEventListener('keypress', handleKey);
+
+            window.passwordModalSubmit = function() {
+                input.removeEventListener('keypress', handleKey);
+                modal.style.display = 'none';
+                resolve(input.value);
+            };
+            window.passwordModalCancel = function() {
+                input.removeEventListener('keypress', handleKey);
+                modal.style.display = 'none';
+                resolve(null);
+            };
+        });
+    }
+
+    // ฟังก์ชันตรวจสอบ Auto Login ทันทีเมื่อเปิดเว็บ และโหลดภาษา
     window.onload = function() {
         if(!localStorage.getItem('cookieConsent_DocSystem')) {
             setTimeout(() => { document.getElementById('cookieNotice').style.display = 'block'; }, 1000);
         }
+
+        // โหลดภาษาที่เลือกค้างไว้ หรือค่าเริ่มต้นเป็นไทย (TH)
+        let savedLang = localStorage.getItem('docSystem_lang') || 'TH';
+        changeLang(savedLang);
 
         // Auto-Login: ดึงข้อมูล Session จาก LocalStorage
         const savedUser = localStorage.getItem('docSystem_user');
@@ -1062,6 +1111,7 @@
     window.logoutSystem = function() {
         localStorage.removeItem('docSystem_user');
         localStorage.removeItem('docSystem_expiry');
+        // ภาษาจะยังจำไว้ ไม่รีเซ็ตเพราะเราใช้ localStorage ของภาษาแยกกัน
         location.reload();
     }
 
@@ -1077,7 +1127,7 @@
             cookie_notice_title: "คุกกี้บนเว็บไซต์นี้", cookie_notice_desc: "เราใช้คุกกี้ที่จำเป็นเพื่อให้เว็บไซต์และระบบแชทงานเอกสารทำงานได้อย่างราบรื่น",
             cookie_btn_settings: "ตั้งค่าคุกกี้", cookie_btn_accept: "ยอมรับทั้งหมด", cookie_title: "การตั้งค่าคุกกี้", cookie_desc: "คุณสามารถเลือกเปิดหรือปิดการใช้งานคุกกี้แต่ละประเภทได้",
             cookie_req_title: "คุกกี้ที่จำเป็นอย่างยิ่ง", cookie_req_desc: "จำเป็นสำหรับการทำงานพื้นฐานของระบบ ปิดไม่ได้", cookie_stat_title: "คุกกี้เพื่อการวิเคราะห์", cookie_stat_desc: "ช่วยให้เราเข้าใจการใช้งานของคุณเพื่อพัฒนาให้ดีขึ้น",
-            btn_cancel: "ยกเลิก", btn_save: "บันทึกการตั้งค่า",
+            btn_cancel: "ยกเลิก", btn_save: "บันทึกการตั้งค่า", btn_confirm: "ตกลง", pwd_title: "กรุณาใส่รหัสผ่าน",
             sys_login_title: "Document System", sys_login_desc: "กรุณาระบุตัวตนเพื่อตรวจสอบสิทธิ์การเข้าถึง (Smart Login)", sys_btn_login: "เข้าสู่ระบบ", sys_menu_subtitle: "กรุณาเลือกรายการที่คุณต้องการเข้าชม", sys_path_home: "หน้าหลัก"
         },
         EN: {
@@ -1091,7 +1141,7 @@
             cookie_notice_title: "Cookies", cookie_notice_desc: "We use cookies to ensure our website runs smoothly.",
             cookie_btn_settings: "Cookie Settings", cookie_btn_accept: "Accept All", cookie_title: "Cookie Settings", cookie_desc: "Enable or disable specific cookies.",
             cookie_req_title: "Strictly Necessary", cookie_req_desc: "Required for the system to function.", cookie_stat_title: "Analytics", cookie_stat_desc: "Helps us improve the system.",
-            btn_cancel: "Cancel", btn_save: "Save",
+            btn_cancel: "Cancel", btn_save: "Save", btn_confirm: "Confirm", pwd_title: "Enter Password",
             sys_login_title: "Document System", sys_login_desc: "Please identify yourself to verify access (Smart Login)", sys_btn_login: "Login", sys_menu_subtitle: "Please select the item you want to view", sys_path_home: "Home"
         },
         CN: {
@@ -1105,16 +1155,24 @@
             cookie_notice_title: "Cookie", cookie_notice_desc: "我们使用 Cookie 以确保网站顺利运行。",
             cookie_btn_settings: "Cookie 设置", cookie_btn_accept: "全部接受", cookie_title: "Cookie 设置", cookie_desc: "启用或禁用特定的 Cookie。",
             cookie_req_title: "绝对必要", cookie_req_desc: "系统运行所必需。", cookie_stat_title: "分析", cookie_stat_desc: "帮助我们改进系统。",
-            btn_cancel: "取消", btn_save: "保存",
+            btn_cancel: "取消", btn_save: "保存", btn_confirm: "确认", pwd_title: "输入密码",
             sys_login_title: "Document System", sys_login_desc: "请确认您的身份以验证访问权限 (Smart Login)", sys_btn_login: "登录", sys_menu_subtitle: "请选择您要查看的项目", sys_path_home: "首页"
         }
     };
-    window.changeLang = function(langCode, btn) {
+
+    window.changeLang = function(langCode) {
+        // บันทึกภาษาลง localStorage
+        localStorage.setItem('docSystem_lang', langCode);
+        
+        // สลับสถานะปุ่มในเมนู
         document.querySelectorAll('#langModal .option-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        const activeBtn = document.getElementById('btnLang' + langCode);
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        // อัปเดตข้อความบนจอ
         document.querySelectorAll('[data-i18n]').forEach(elem => {
             const key = elem.getAttribute('data-i18n');
-            if(translations[langCode][key]) elem.innerHTML = translations[langCode][key];
+            if(translations[langCode] && translations[langCode][key]) elem.innerHTML = translations[langCode][key];
         });
         document.getElementById('langModal').style.display = 'none';
     }
@@ -1418,11 +1476,13 @@
         return false;
     }
 
-    window.checkTreeFolderPassword = function(e, folderPath, pwd) {
+    // เปลี่ยนมาใช้ async await กับ Modal Custom แทน prompt เบราว์เซอร์
+    window.checkTreeFolderPassword = async function(e, folderPath, pwd) {
         if (!pwd) return;
         if (!unlockedItems.has(folderPath)) {
             e.preventDefault(); 
-            let input = prompt("โฟลเดอร์นี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
+            let input = await showPasswordPrompt("โฟลเดอร์นี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
+            if (input === null) return; // กดยกเลิก
             if (input !== pwd) { showToastAlert("รหัสผ่านไม่ถูกต้อง"); return; }
             unlockedItems.add(folderPath); renderExplorer();
         }
@@ -1631,13 +1691,16 @@
       document.getElementById("itemList").innerHTML = html;
     }
 
-    window.openFolder = function(encodedFolderName, absolutePath = null) {
+    // เปลี่ยนมาใช้ async await กับ Modal Custom แทน prompt เบราว์เซอร์
+    window.openFolder = async function(encodedFolderName, absolutePath = null) {
       const folderName = decodeURIComponent(encodedFolderName);
       let targetPath = currentPath === "" ? folderName : currentPath + "/" + folderName;
       if (absolutePath !== null && absolutePath !== "undefined") targetPath = decodeURIComponent(absolutePath);
       let meta = folderMeta[targetPath];
+      
       if (meta && meta.password && !unlockedItems.has(targetPath)) {
-          let pwd = prompt("โฟลเดอร์นี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
+          let pwd = await showPasswordPrompt("โฟลเดอร์นี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
+          if (pwd === null) return; // กดยกเลิก
           if (pwd !== meta.password) { showToastAlert("รหัสผ่านไม่ถูกต้อง"); return; }
           unlockedItems.add(targetPath);
       }
@@ -1653,10 +1716,12 @@
        renderExplorer();
     }
 
-    window.openFile = function(index) {
+    // เปลี่ยนมาใช้ async await กับ Modal Custom แทน prompt เบราว์เซอร์
+    window.openFile = async function(index) {
       const file = userFiles[index];
       if (file.password && !unlockedItems.has(file.id)) {
-          let pwd = prompt("เอกสารนี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
+          let pwd = await showPasswordPrompt("เอกสารนี้ถูกล็อก กรุณาใส่รหัสผ่าน:");
+          if (pwd === null) return; // กดยกเลิก
           if (pwd !== file.password) { showToastAlert("รหัสผ่านไม่ถูกต้อง"); return; }
           unlockedItems.add(file.id);
       }
