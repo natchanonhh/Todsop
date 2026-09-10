@@ -506,6 +506,17 @@
                 <svg viewBox="0 0 24 24" width="20" height="20" stroke="#86868b" stroke-width="2" fill="none" style="position: absolute; right: 12px; pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
             
+            <!-- ปุ่มอัปโหลดด่วน (Quick Upload) -->
+            <div style="flex-shrink: 0; margin-left: 10px;">
+              <button class="options-btn" onclick="openQuickUploadModal()" title="อัปโหลดด่วน" style="margin-bottom: 0;">
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+              </button>
+            </div>
+
             <div class="options-btn-wrap-relative">
               <button class="options-btn" onclick="toggleOptionsMenu(event)">
                 <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -688,6 +699,31 @@
           </div>
 
           <button class="sys-btn" style="background: var(--pink-primary); margin-bottom: 0;" onclick="saveProfile()" data-i18n="profile_save">บันทึกข้อมูล</button>
+      </div>
+  </div>
+
+  <!-- Quick Upload Modal (อัปโหลดเอกสารด่วน) -->
+  <div class="ui-modal" id="quickUploadModal">
+      <div class="ui-modal-content" style="max-width: 450px; text-align: left;">
+          <button class="ui-close-btn" onclick="document.getElementById('quickUploadModal').style.display='none'">&times;</button>
+          <h3 style="color: var(--pink-primary); margin-bottom: 15px;">อัปโหลดเอกสารด่วน (Supabase)</h3>
+          
+          <label style="font-size: 14px; font-weight: bold; color: var(--apple-text-main);">1. เลือกไฟล์ (รองรับทุกนามสกุล)</label>
+          <input type="file" id="quFile" style="width: 100%; padding: 10px; margin-top: 8px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--apple-border); background: #f5f5f7;">
+          
+          <label style="font-size: 14px; font-weight: bold; color: var(--apple-text-main);">2. เลือกโฟลเดอร์เป้าหมาย</label>
+          <select id="quFolderSelect" onchange="toggleNewFolderInput()" style="width: 100%; padding: 14px; margin-top: 8px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--apple-border); background: #f5f5f7; font-size: 15px; font-family: inherit;">
+              <option value="">-- โหลดข้อมูลโฟลเดอร์... --</option>
+          </select>
+          
+          <div id="quNewFolderDiv" style="display: none; margin-bottom: 15px;">
+              <label style="font-size: 14px; font-weight: bold; color: var(--apple-text-main);">ตั้งชื่อโฟลเดอร์ใหม่</label>
+              <input type="text" id="quNewFolder" placeholder="ระบุชื่อโฟลเดอร์ที่ต้องการสร้าง..." style="width: 100%; padding: 14px; margin-top: 8px; border-radius: 12px; border: 1px solid var(--apple-border); background: #fff; font-size: 15px; font-family: inherit;">
+          </div>
+
+          <p id="quStatusMsg" style="font-size: 14px; color: var(--apple-blue); display: none; margin-bottom: 15px; font-weight: bold; text-align: center;"></p>
+
+          <button class="sys-btn" id="quSubmitBtn" style="background: var(--pink-primary); margin-bottom: 0;" onclick="submitQuickUpload()">เริ่มอัปโหลดไฟล์</button>
       </div>
   </div>
 
@@ -1110,7 +1146,7 @@
         setSortMode(appSortMode);
         
         if (currentId) {
-            updateProfileUI(); // โหลดชื่อแสดงผลหากมี
+            updateProfileUI(); 
         }
         
         if (document.getElementById("menuBox").style.display !== "none") {
@@ -1321,15 +1357,12 @@
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                // แสดง Modal สำหรับ Crop รูปภาพ
                 document.getElementById('cropModal').style.display = 'flex';
                 const image = document.getElementById('imageToCrop');
                 image.src = e.target.result;
                 
-                // ล้างค่า Cropper เดิมหากมี
                 if(cropperInstance) { cropperInstance.destroy(); }
                 
-                // ตั้งค่า Cropper.js (อัตราส่วน 1:1)
                 cropperInstance = new Cropper(image, {
                     aspectRatio: 1,
                     viewMode: 1,
@@ -1339,10 +1372,9 @@
             };
             reader.readAsDataURL(file);
         }
-        event.target.value = ''; // เคลียร์ input เพื่อให้เลือกไฟล์เดิมซ้ำได้
+        event.target.value = ''; 
     }
     
-    // ฟังก์ชันยกเลิกการครอป
     window.cancelCrop = function() {
         document.getElementById('cropModal').style.display = 'none';
         if(cropperInstance) {
@@ -1351,17 +1383,14 @@
         }
     }
     
-    // ฟังก์ชันยืนยันการครอป
     window.confirmCrop = function() {
         if(!cropperInstance) return;
         
-        // รับค่ารูปที่ถูกครอปเป็น Canvas
         const canvas = cropperInstance.getCroppedCanvas({
             width: 300,
             height: 300
         });
         
-        // แปลง Canvas เป็น Base64
         tempProfileBase64 = canvas.toDataURL('image/jpeg', 0.8);
         
         const preview = document.getElementById('profilePreview');
@@ -1371,13 +1400,11 @@
         preview.style.display = 'block';
         defaultIcon.style.display = 'none';
         
-        // ปิด Crop Modal และทำลายอินสแตนซ์
         document.getElementById('cropModal').style.display = 'none';
         cropperInstance.destroy();
         cropperInstance = null;
     }
 
-    // ตัวแปรสำหรับตรวจสอบการจำกัดการเปลี่ยนชื่อ (3 วัน)
     window.currentProfileName = "";
     window.isNameLocked = false;
 
@@ -1398,13 +1425,12 @@
                 if(data.lastNameChangeAt) lastNameChangeAt = data.lastNameChangeAt.toMillis();
             }
             
-            window.currentProfileName = currentName; // เก็บค่าเดิมไว้เปรียบเทียบ
+            window.currentProfileName = currentName; 
 
-            document.getElementById('profileIdInput').value = currentId; // แสดง ID ที่แก้ไขไม่ได้
+            document.getElementById('profileIdInput').value = currentId; 
             document.getElementById('profileNameInput').value = currentName;
             document.getElementById('profilePasswordInput').value = currentPass;
             
-            // ตรวจสอบเงื่อนไขล็อก 3 วัน
             const now = Date.now();
             const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
             const timeDiff = now - lastNameChangeAt;
@@ -1457,16 +1483,14 @@
             updatedAt: serverTimestamp()
         };
         
-        // ตรวจสอบว่ามีการเปลี่ยนชื่อและไม่ได้ติดล็อก
         let isNameChanged = (!window.isNameLocked && newName !== window.currentProfileName && newName !== "");
         
         if (isNameChanged) {
-            // แจ้งเตือนก่อนแก้ไขชื่อ
             if (!confirm(t('confirm_name_change'))) {
-                return; // ถ้ายกเลิก ก็หยุดการบันทึก
+                return; 
             }
             updateData.displayName = newName;
-            updateData.lastNameChangeAt = serverTimestamp(); // บันทึกเวลาที่เปลี่ยน
+            updateData.lastNameChangeAt = serverTimestamp(); 
         } else if (!window.isNameLocked && newName !== "") {
             updateData.displayName = newName;
         }
@@ -1483,7 +1507,6 @@
         }
     }
     
-    // ฟังก์ชันอัปเดต UI หน้าหลักเมื่อโหลด/แก้โปรไฟล์
     window.updateProfileUI = async function() {
         if(!currentId) return;
         try {
@@ -1640,7 +1663,6 @@
       try {
         const searchId = rawId.replace(/[\s"']/g, '').toLowerCase();
         
-        // เช็ครหัสผ่านก่อนดำเนินการถ้าผู้ใช้มีการตั้งค่าไว้ในระบบ
         if (!autoLoginId) {
             const userDocSnap = await getDoc(doc(db, "users", searchId));
             if (userDocSnap.exists()) {
@@ -1652,12 +1674,12 @@
                         passInput.focus();
                         document.getElementById("errorMsg").innerHTML = "กรุณากรอกรหัสผ่านเพื่อเข้าสู่ระบบ";
                         document.getElementById("errorMsg").style.display = "block";
-                        return; // หยุดทำงานเพื่อรอให้ผู้ใช้ใส่รหัสผ่าน
+                        return; 
                     } else {
                         if (passInput.value !== userData.password) {
                             document.getElementById("errorMsg").innerHTML = "รหัสผ่านไม่ถูกต้อง";
                             document.getElementById("errorMsg").style.display = "block";
-                            return; // รหัสผ่านผิด หยุดทำงาน
+                            return; 
                         }
                     }
                 }
@@ -1718,7 +1740,6 @@
           localStorage.setItem('docSystem_user', currentId);
           localStorage.setItem('docSystem_expiry', Date.now() + (3 * 60 * 60 * 1000));
 
-          // เมื่อล็อกอินสำเร็จ อัปเดตข้อมูลคุกกี้ให้ผูกกับรหัสผู้ใช้
           if (localStorage.getItem('cookieConsent_DocSystem')) {
               let func = localStorage.getItem('cookieFunctional') === 'true';
               let anal = localStorage.getItem('cookieAnalytics') === 'true';
@@ -1726,13 +1747,12 @@
               saveCookieToFirestore(func, anal, mark);
           }
           
-          // ทำการโหลดและอัปเดต UI สำหรับ Profile ทันทีเมื่อล็อกอิน
           updateProfileUI();
 
           document.getElementById("loginBox").style.display = "none";
           document.getElementById("menuBox").style.display = "block";
           document.getElementById("mainTopIcons").style.display = "flex";
-          document.getElementById("profileHeaderBtn").style.display = "flex"; // แสดงปุ่ม Profile
+          document.getElementById("profileHeaderBtn").style.display = "flex"; 
           document.getElementById("logoutHeaderBtn").style.display = "flex";
           updateReminderBadge();
 
@@ -1920,7 +1940,7 @@
                 if (file.type !== "system_folder") { let path = (file.folder || "").trim().replace(/^\/+|\/+$/g, ''); file.normalizedPath = path; userFiles.push(file); }
             });
             
-            updateProfileUI(); // อัปเดตข้อมูลผู้ใช้งานหลังรีเฟรช
+            updateProfileUI(); 
             renderExplorer();
         } catch (error) { showToastAlert("เกิดข้อผิดพลาดในการดึงข้อมูลอัปเดตใหม่");
         } finally { if(svg) setTimeout(() => svg.style.transform = 'rotate(0deg)', 500); }
@@ -2294,6 +2314,151 @@
       const file = userFiles.find(f => f.id === jobId); if (!file) return;
       window.open(file.url, "_blank");
       addDoc(collection(db, "download_history"), { jobId: file.id, jobTitle: file.title, studentId: currentId, downloadedAt: serverTimestamp() });
+    }
+
+    // =====================================
+    // ระบบอัปโหลดเอกสารแบบเร่งด่วน (Supabase + Firebase)
+    // =====================================
+    const SUPABASE_URL = "https://jpejixrqjszqizmwipju.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwZWppeHJxanN6cWl6bXdpcGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNDQwOTAsImV4cCI6MjEwNDYyMDA5MH0.4C4ZIq1J4TO-oaJt9qouFXmqAau1jSzzREFaQNr0q1E";
+    const SUPABASE_BUCKET = "quick_docs"; // แอดมินต้องสร้าง Bucket ชื่อนี้แบบ Public
+
+    window.openQuickUploadModal = function() {
+        const select = document.getElementById("quFolderSelect");
+        select.innerHTML = '<option value="">-- วางที่หน้าหลัก (ไม่ใส่โฟลเดอร์) --</option><option value="NEW_FOLDER">+ สร้างโฟลเดอร์ใหม่...</option>';
+        
+        const folderPaths = Object.keys(folderMeta).sort();
+        folderPaths.forEach(path => {
+            if(path) {
+                const opt = document.createElement('option');
+                opt.value = path;
+                opt.innerText = `📁 ${path}`;
+                if(path === currentPath) opt.selected = true; // เลือกโฟลเดอร์ปัจจุบันอัตโนมัติ
+                select.appendChild(opt);
+            }
+        });
+
+        document.getElementById("quFile").value = "";
+        document.getElementById("quNewFolder").value = "";
+        document.getElementById("quStatusMsg").style.display = "none";
+        toggleNewFolderInput();
+        document.getElementById('quickUploadModal').style.display = 'flex';
+    }
+
+    window.toggleNewFolderInput = function() {
+        const val = document.getElementById("quFolderSelect").value;
+        document.getElementById("quNewFolderDiv").style.display = val === "NEW_FOLDER" ? "block" : "none";
+    }
+
+    window.submitQuickUpload = async function() {
+        const fileInput = document.getElementById("quFile");
+        const folderSelect = document.getElementById("quFolderSelect").value;
+        const newFolderInput = document.getElementById("quNewFolder").value.trim();
+        const statusMsg = document.getElementById("quStatusMsg");
+        const submitBtn = document.getElementById("quSubmitBtn");
+
+        if (!fileInput.files || fileInput.files.length === 0) {
+            showToastAlert("กรุณาเลือกไฟล์ที่ต้องการอัปโหลด");
+            return;
+        }
+        if (folderSelect === "NEW_FOLDER" && !newFolderInput) {
+            showToastAlert("กรุณาระบุชื่อโฟลเดอร์ใหม่");
+            return;
+        }
+
+        const file = fileInput.files[0];
+        let targetFolderPath = folderSelect === "NEW_FOLDER" ? (currentPath ? `${currentPath}/${newFolderInput}` : newFolderInput) : folderSelect;
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "กำลังอัปโหลดไฟล์...";
+        statusMsg.style.display = "block";
+        statusMsg.style.color = "var(--apple-blue)";
+        statusMsg.innerText = "1/2 กำลังอัปโหลดไฟล์ไปยัง Supabase...";
+
+        try {
+            // 1. ตรวจสอบหรือสร้างโฟลเดอร์ใน Firebase หากเลือกสร้างโฟลเดอร์ใหม่
+            if (folderSelect === "NEW_FOLDER") {
+                const existing = Object.keys(folderMeta).find(p => p === targetFolderPath);
+                if (!existing) {
+                    const newFolderRef = doc(collection(db, "jobs"));
+                    await setDoc(newFolderRef, {
+                        title: `[Folder] ${newFolderInput}`,
+                        titleEN: "", titleCN: "",
+                        folder: targetFolderPath,
+                        type: "system_folder",
+                        color: "blue",
+                        emoji: "", password: "", isPaused: false,
+                        allowedUsers: [], searchableUsers: [],
+                        createdAt: serverTimestamp(), updatedAt: serverTimestamp()
+                    });
+                    folderMeta[targetFolderPath] = { color: 'blue', emoji: '', password: '', isPaused: false, updatedAt: null };
+                }
+            }
+
+            // 2. อัปโหลดไฟล์ขึ้น Supabase Storage (REST API)
+            const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+            const fileName = `${Date.now()}_${safeName}`;
+            const filePath = targetFolderPath ? `${targetFolderPath}/${fileName}` : fileName;
+
+            const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${encodeURIComponent(filePath)}`;
+            
+            const response = await fetch(uploadUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Content-Type': file.type || 'application/octet-stream'
+                },
+                body: file
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.message || "อัปโหลดล้มเหลว");
+            }
+
+            // 3. ดึง URL อัตโนมัติ บันทึกลง Firebase (คอลเล็กชัน jobs)
+            statusMsg.innerText = "2/2 กำลังเชื่อมข้อมูลไปยังระบบส่วนกลาง (Firebase)...";
+            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${encodeURIComponent(filePath)}`;
+            
+            let fileType = "link"; // ไฟล์ทั่วไปเปิดเป็นลิงก์ดาวน์โหลด
+            if (file.type.startsWith("image/")) fileType = "image";
+            else if (file.type === "application/pdf") fileType = "pdf";
+
+            const jobData = {
+                title: file.name,
+                titleEN: "", titleCN: "",
+                folder: targetFolderPath,
+                type: fileType,
+                url: publicUrl,
+                allowedUsers: [currentId], 
+                searchableUsers: [currentId.toLowerCase()],
+                showWatermark: true,
+                password: "",
+                isPaused: false,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            };
+
+            await addDoc(collection(db, "jobs"), jobData);
+
+            statusMsg.style.color = "var(--apple-green)";
+            statusMsg.innerText = "อัปโหลดและบันทึกเสร็จสมบูรณ์!";
+            
+            setTimeout(() => {
+                document.getElementById('quickUploadModal').style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.innerText = "เริ่มอัปโหลดไฟล์";
+                refreshData(); 
+            }, 1500);
+
+        } catch (error) {
+            console.error(error);
+            statusMsg.style.color = "var(--apple-red)";
+            statusMsg.innerText = `เกิดข้อผิดพลาด: ${error.message}`;
+            submitBtn.disabled = false;
+            submitBtn.innerText = "ลองใหม่อีกครั้ง";
+        }
     }
 
     document.addEventListener('keydown', function(e) {
