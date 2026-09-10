@@ -583,6 +583,9 @@
             <h3 id="displayName" style="margin: 0; word-break: break-word; text-align: left; font-size: 22px; flex: 1; white-space: normal;"></h3>
         </div>
         <div id="downloadSection"></div>
+        <!-- ส่วนเครื่องมือจัดการสำหรับเจ้าของไฟล์ (คนอัปโหลด) -->
+        <div id="ownerActions" style="display: none; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;"></div>
+        
         <div class="protected-view">
           <div class="watermark" id="watermarkText"></div>
           <div id="driveBlocker" class="drive-blocker" style="display: none;" title="ไม่อนุญาตให้เปิดภายนอก"></div>
@@ -713,7 +716,7 @@
           
           <label style="font-size: 14px; font-weight: bold; color: var(--apple-text-main);">2. เลือกโฟลเดอร์เป้าหมาย</label>
           <select id="quFolderSelect" onchange="toggleNewFolderInput()" style="width: 100%; padding: 14px; margin-top: 8px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--apple-border); background: #f5f5f7; font-size: 15px; font-family: inherit;">
-              <option value="">-- โหลดข้อมูลโฟลเดอร์... --</option>
+              <option value="">-- วางที่หน้าหลัก (ไม่ใส่โฟลเดอร์) --</option>
           </select>
           
           <div id="quNewFolderDiv" style="display: none; margin-bottom: 15px;">
@@ -907,7 +910,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, doc, serverTimestamp, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc, serverTimestamp, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     
     const firebaseConfig = {
       apiKey: "AIzaSyBLyMpowfyQK_1UnredPFmXdBdtQZKpY-c",
@@ -2248,6 +2251,19 @@
       document.getElementById("contentBox").setAttribute("data-active-job", file.id);
       const viewer = document.getElementById("fileViewer"); const blocker = document.getElementById("driveBlocker");
       
+      // แสดงเครื่องมือจัดการ สำหรับเจ้าของไฟล์เท่านั้น
+      const ownerActions = document.getElementById("ownerActions");
+      if (file.uploader === currentId) {
+          ownerActions.style.display = "flex";
+          ownerActions.innerHTML = `
+              <button class="sys-btn" style="width: auto; background: #ffcc00; color: #1d1d1f; margin-bottom: 0; padding: 10px 20px; font-size: 15px;" onclick="editUserFile('${file.id}')">✏️ แก้ไขชื่อไฟล์</button>
+              <button class="sys-btn" style="width: auto; background: var(--apple-red); margin-bottom: 0; padding: 10px 20px; font-size: 15px;" onclick="deleteUserFile('${file.id}', '${file.url}')">🗑️ ลบไฟล์</button>
+          `;
+      } else {
+          ownerActions.style.display = "none";
+          ownerActions.innerHTML = "";
+      }
+      
       if (file.type === "link") {
         blocker.style.display = "none"; viewer.innerHTML = `<div id="linkContainer" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; flex-direction: column;"><p id="linkStatusText" style="font-size: 18px; color: var(--apple-text-muted);">${t('link_checking')}</p></div>`;
       } else if (file.type === "youtube") {
@@ -2266,9 +2282,65 @@
       checkDownloadStatus(file.id);
     }
 
+    // ฟังก์ชันแก้ไขชื่อไฟล์ (สำหรับเจ้าของ)
+    window.editUserFile = async function(jobId) {
+        const file = userFiles.find(f => f.id === jobId);
+        if(!file) return;
+        const newName = prompt("ระบุชื่อไฟล์ใหม่ที่ต้องการ:", file.title);
+        if(newName !== null && newName.trim() !== "") {
+            try {
+                await updateDoc(doc(db, "jobs", jobId), { title: newName.trim(), updatedAt: serverTimestamp() });
+                file.title = newName.trim();
+                file.displayName = getLocalizedFileTitle(file); 
+                document.getElementById("displayName").innerText = file.displayName;
+                showToastAlert("อัปเดตชื่อไฟล์สำเร็จ");
+            } catch(e) {
+                showToastAlert("เกิดข้อผิดพลาดในการเปลี่ยนชื่อ");
+            }
+        }
+    }
+
+    // ฟังก์ชันลบไฟล์ (สำหรับเจ้าของ)
+    window.deleteUserFile = async function(jobId, fileUrl) {
+        if(!confirm("คุณแน่ใจหรือไม่ว่าต้องการลบไฟล์นี้?\n(การกระทำนี้ไม่สามารถกู้คืนได้)")) return;
+        
+        try {
+            // ลบข้อมูลใน Firebase
+            await deleteDoc(doc(db, "jobs", jobId));
+            
+            // หากเป็นไฟล์ของ Supabase พยายามลบไฟล์จริงออกจาก Storage ด้วย
+            if(fileUrl && fileUrl.includes(SUPABASE_URL)) {
+                try {
+                    // ดึง Path ของไฟล์ออกมาจาก URL
+                    const pathMatch = fileUrl.split(`/public/${SUPABASE_BUCKET}/`);
+                    if(pathMatch && pathMatch[1]) {
+                        const filePath = decodeURIComponent(pathMatch[1]);
+                        const deleteUrl = `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${encodeURIComponent(filePath)}`;
+                        await fetch(deleteUrl, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                                'apikey': SUPABASE_ANON_KEY
+                            }
+                        });
+                    }
+                } catch(err) {
+                    console.warn("ไม่สามารถลบไฟล์จริงใน Supabase ได้: ", err);
+                }
+            }
+            
+            showToastAlert("ลบไฟล์สำเร็จ");
+            closeFile();
+            refreshData(); 
+        } catch(e) {
+            showToastAlert("เกิดข้อผิดพลาดในการลบไฟล์");
+        }
+    }
+
     window.closeFile = function() {
       document.getElementById("contentBox").setAttribute("data-active-job", "");
       document.getElementById("fileViewer").innerHTML = ""; document.getElementById("downloadSection").innerHTML = "";
+      document.getElementById("ownerActions").innerHTML = ""; document.getElementById("ownerActions").style.display = "none";
       document.getElementById("contentBox").style.display = "none"; document.getElementById("menuBox").style.display = "block";
     }
 
@@ -2321,7 +2393,7 @@
     // =====================================
     const SUPABASE_URL = "https://jpejixrqjszqizmwipju.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwZWppeHJxanN6cWl6bXdpcGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNDQwOTAsImV4cCI6MjEwNDYyMDA5MH0.4C4ZIq1J4TO-oaJt9qouFXmqAau1jSzzREFaQNr0q1E";
-    const SUPABASE_BUCKET = "quick_docs"; // แอดมินต้องสร้าง Bucket ชื่อนี้แบบ Public
+    const SUPABASE_BUCKET = "quick_docs"; 
 
     window.openQuickUploadModal = function() {
         const select = document.getElementById("quFolderSelect");
@@ -2333,7 +2405,7 @@
                 const opt = document.createElement('option');
                 opt.value = path;
                 opt.innerText = `📁 ${path}`;
-                if(path === currentPath) opt.selected = true; // เลือกโฟลเดอร์ปัจจุบันอัตโนมัติ
+                if(path === currentPath) opt.selected = true; 
                 select.appendChild(opt);
             }
         });
@@ -2376,7 +2448,6 @@
         statusMsg.innerText = "1/2 กำลังอัปโหลดไฟล์ไปยัง Supabase...";
 
         try {
-            // 1. ตรวจสอบหรือสร้างโฟลเดอร์ใน Firebase หากเลือกสร้างโฟลเดอร์ใหม่
             if (folderSelect === "NEW_FOLDER") {
                 const existing = Object.keys(folderMeta).find(p => p === targetFolderPath);
                 if (!existing) {
@@ -2395,7 +2466,6 @@
                 }
             }
 
-            // 2. อัปโหลดไฟล์ขึ้น Supabase Storage (REST API)
             const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
             const fileName = `${Date.now()}_${safeName}`;
             const filePath = targetFolderPath ? `${targetFolderPath}/${fileName}` : fileName;
@@ -2417,11 +2487,10 @@
                 throw new Error(errData.message || "อัปโหลดล้มเหลว");
             }
 
-            // 3. ดึง URL อัตโนมัติ บันทึกลง Firebase (คอลเล็กชัน jobs)
             statusMsg.innerText = "2/2 กำลังเชื่อมข้อมูลไปยังระบบส่วนกลาง (Firebase)...";
             const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${encodeURIComponent(filePath)}`;
             
-            let fileType = "link"; // ไฟล์ทั่วไปเปิดเป็นลิงก์ดาวน์โหลด
+            let fileType = "link"; 
             if (file.type.startsWith("image/")) fileType = "image";
             else if (file.type === "application/pdf") fileType = "pdf";
 
@@ -2433,6 +2502,7 @@
                 url: publicUrl,
                 allowedUsers: [currentId], 
                 searchableUsers: [currentId.toLowerCase()],
+                uploader: currentId, // <--- บันทึกผู้ใช้ที่เป็นเจ้าของไฟล์
                 showWatermark: true,
                 password: "",
                 isPaused: false,
