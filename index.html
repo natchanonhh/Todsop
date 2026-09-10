@@ -662,9 +662,15 @@
               <button onclick="document.getElementById('profilePicInput').click()" style="margin-top: 10px; background: #e5e5ea; color: #1d1d1f; border: none; padding: 8px 16px; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 500;" data-i18n="profile_btn_change">เปลี่ยนรูปโปรไฟล์</button>
           </div>
 
+          <!-- ช่องแสดงรหัสประจำตัว (ID) แบบปิดการแก้ไข -->
           <div style="text-align: left; margin-bottom: 15px;">
-              <label style="font-size: 14px; font-weight: bold; color: var(--apple-text-main);" data-i18n="profile_name">ชื่อแสดงผล / ไอดี</label>
-              <input type="text" id="profileNameInput" style="width: 100%; padding: 14px; margin-top: 8px; border-radius: 12px; border: 1px solid var(--apple-border); background: #f5f5f7; font-size: 15px; font-family: inherit;">
+              <label style="font-size: 14px; font-weight: bold; color: var(--apple-text-main);" data-i18n="profile_id">รหัสประจำตัว (ID - ติดต่อแอดมินเพื่อแก้ไข)</label>
+              <input type="text" id="profileIdInput" disabled style="width: 100%; padding: 14px; margin-top: 8px; border-radius: 12px; border: 1px solid var(--apple-border); background: #e5e5ea; color: #86868b; font-size: 15px; font-family: inherit; cursor: not-allowed;">
+          </div>
+
+          <div style="text-align: left; margin-bottom: 15px;">
+              <label style="font-size: 14px; font-weight: bold; color: var(--apple-text-main);" data-i18n="profile_name">ชื่อแสดงผล</label>
+              <input type="text" id="profileNameInput" style="width: 100%; padding: 14px; margin-top: 8px; border-radius: 12px; border: 1px solid var(--apple-border); background: #f5f5f7; font-size: 15px; font-family: inherit;" placeholder="ตั้งชื่อแสดงผล...">
           </div>
           
           <div style="text-align: left; margin-bottom: 25px;">
@@ -962,7 +968,7 @@
             btn_re_request: "ยื่นคำขอสิทธิ์ใหม่อีกครั้ง", status_expired: "สถานะ: สิทธิ์การเข้าถึงของคุณหมดอายุแล้ว", btn_renew: "ยื่นคำขอต่ออายุสิทธิ์",
             link_no_access: "คุณยังไม่ได้รับอนุญาตให้เข้าถึงลิงก์นี้ กรุณาตรวจสอบสถานะด้านบน", error_fetch: "เกิดข้อผิดพลาดในการดึงข้อมูล",
             status_sending: "ระบบกำลังส่งคำขอ...", link_checking: "กำลังตรวจสอบการอนุญาตเข้าถึงลิงก์...",
-            profile_title: "ข้อมูลส่วนบุคคล", profile_btn_change: "เปลี่ยนรูปโปรไฟล์", profile_name: "ชื่อแสดงผล / ไอดี", profile_pass: "รหัสผ่านเข้าสู่ระบบ (เว้นว่างได้)", profile_save: "บันทึกข้อมูล"
+            profile_title: "ข้อมูลส่วนบุคคล", profile_btn_change: "เปลี่ยนรูปโปรไฟล์", profile_name: "ชื่อแสดงผล", profile_id: "รหัสประจำตัว (ID - ติดต่อแอดมินเพื่อแก้ไข)", profile_pass: "รหัสผ่านเข้าสู่ระบบ (เว้นว่างได้)", profile_save: "บันทึกข้อมูล"
         },
         EN: {
             logo: "Doc System", nav_1: "System", nav_2: "Privacy Policy", nav_3: "Manual", nav_4: "Contact",
@@ -1001,7 +1007,7 @@
             btn_re_request: "Submit request again", status_expired: "Status: Your access right has expired", btn_renew: "Request renewal",
             link_no_access: "You do not have permission to access this link. Please check status above.", error_fetch: "Error fetching data",
             status_sending: "Sending request...", link_checking: "Checking link access permissions...",
-            profile_title: "Profile", profile_btn_change: "Change Picture", profile_name: "Display Name / ID", profile_pass: "Login Password (Optional)", profile_save: "Save Data"
+            profile_title: "Profile", profile_btn_change: "Change Picture", profile_name: "Display Name", profile_id: "User ID (Contact admin to change)", profile_pass: "Login Password (Optional)", profile_save: "Save Data"
         },
         CN: {
             logo: "文件系统", nav_1: "系统", nav_2: "隐私政策", nav_3: "手册", nav_4: "联系我们",
@@ -1040,7 +1046,7 @@
             btn_re_request: "重新提交申请", status_expired: "状态：您的访问权限已过期", btn_renew: "申请续期",
             link_no_access: "您无权访问此链接。请检查上方状态。", error_fetch: "获取数据时出错",
             status_sending: "正在发送请求...", link_checking: "正在检查链接访问权限...",
-            profile_title: "个人信息", profile_btn_change: "更换头像", profile_name: "显示名称 / ID", profile_pass: "登录密码 (可选)", profile_save: "保存数据"
+            profile_title: "个人信息", profile_btn_change: "更换头像", profile_name: "显示名称", profile_id: "用户ID (联系管理员修改)", profile_pass: "登录密码 (可选)", profile_save: "保存数据"
         }
     };
 
@@ -1303,7 +1309,7 @@
         if(!currentId) return;
         try {
             const userDocSnap = await getDoc(doc(db, "users", currentId));
-            let currentName = currentId;
+            let currentName = "";
             let currentPass = "";
             let currentPic = "";
             
@@ -1314,6 +1320,7 @@
                 if(data.profilePic) currentPic = data.profilePic;
             }
             
+            document.getElementById('profileIdInput').value = currentId; // แสดง ID ที่แก้ไขไม่ได้
             document.getElementById('profileNameInput').value = currentName;
             document.getElementById('profilePasswordInput').value = currentPass;
             
@@ -1343,7 +1350,7 @@
         
         try {
             await setDoc(doc(db, "users", currentId), {
-                displayName: newName || currentId,
+                displayName: newName,
                 password: newPass,
                 profilePic: tempProfileBase64,
                 updatedAt: serverTimestamp()
@@ -1369,7 +1376,7 @@
             
             if(userDocSnap.exists()) {
                 const data = userDocSnap.data();
-                if(data.displayName) {
+                if(data.displayName && data.displayName.trim() !== "") {
                     menuTitle.innerText = `${t('user_id')} ${data.displayName}`;
                 } else {
                     menuTitle.innerText = `${t('user_id')} ${currentId}`;
