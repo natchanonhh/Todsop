@@ -20,6 +20,10 @@
   
   <!-- โหลดสคริปต์ Cloudflare Turnstile -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <!-- โหลดไลบรารี Cropper.js สำหรับครอปรูปภาพ -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   
   <style>
     /* =======================================================
@@ -328,6 +332,10 @@
     .z-3 { animation: swayUpToRight 2s ease-out 1s infinite; }
     .z-4 { animation: swayUpToRight 2s ease-out 1.5s infinite; }
     @keyframes swayUpToRight { 0% { transform: translate(0, 0) rotate(0deg); opacity: 1; } 100% { transform: translate(30px, -40px) rotate(30deg); opacity: 0; } }
+
+    /* Crop Image Container */
+    .crop-container { width: 100%; max-height: 400px; margin-bottom: 20px; overflow: hidden; }
+    .crop-container img { max-width: 100%; display: block; }
 
     /* Responsive */
     @media (max-width: 1024px) {
@@ -671,6 +679,7 @@
           <div style="text-align: left; margin-bottom: 15px;">
               <label style="font-size: 14px; font-weight: bold; color: var(--apple-text-main);" data-i18n="profile_name">ชื่อแสดงผล</label>
               <input type="text" id="profileNameInput" style="width: 100%; padding: 14px; margin-top: 8px; border-radius: 12px; border: 1px solid var(--apple-border); background: #f5f5f7; font-size: 15px; font-family: inherit;" placeholder="ตั้งชื่อแสดงผล...">
+              <p id="nameCooldownMsg" style="font-size: 13px; color: var(--apple-red); display: none; margin-top: 8px; margin-bottom: 0;"></p>
           </div>
           
           <div style="text-align: left; margin-bottom: 25px;">
@@ -679,6 +688,20 @@
           </div>
 
           <button class="sys-btn" style="background: var(--pink-primary); margin-bottom: 0;" onclick="saveProfile()" data-i18n="profile_save">บันทึกข้อมูล</button>
+      </div>
+  </div>
+
+  <!-- Crop Modal (สำหรับครอบตัดรูปภาพโปรไฟล์) -->
+  <div class="ui-modal" id="cropModal" style="z-index: 10005;">
+      <div class="ui-modal-content" style="max-width: 500px; text-align: center; padding: 25px;">
+          <h3 style="color: #1d1d1f; margin-bottom: 15px;" data-i18n="crop_title">ครอบตัดรูปภาพ</h3>
+          <div class="crop-container">
+              <img id="imageToCrop" src="">
+          </div>
+          <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+              <button class="sys-btn" style="background: #e5e5ea; color: #1d1d1f; flex: 1; margin-bottom: 0;" onclick="cancelCrop()" data-i18n="btn_cancel">ยกเลิก</button>
+              <button class="sys-btn" style="background: var(--pink-primary); flex: 1; margin-bottom: 0;" onclick="confirmCrop()" data-i18n="btn_confirm">ยืนยัน</button>
+          </div>
       </div>
   </div>
 
@@ -883,6 +906,7 @@
     let currentDisplayMonth = new Date().getMonth();
     
     let tempProfileBase64 = ""; // สำหรับเก็บรูปในส่วน Profile Modal
+    let cropperInstance = null; // ตัวแปรสำหรับ Cropper.js
 
     const studentInput = document.getElementById("studentId");
     if(studentInput) {
@@ -968,7 +992,8 @@
             btn_re_request: "ยื่นคำขอสิทธิ์ใหม่อีกครั้ง", status_expired: "สถานะ: สิทธิ์การเข้าถึงของคุณหมดอายุแล้ว", btn_renew: "ยื่นคำขอต่ออายุสิทธิ์",
             link_no_access: "คุณยังไม่ได้รับอนุญาตให้เข้าถึงลิงก์นี้ กรุณาตรวจสอบสถานะด้านบน", error_fetch: "เกิดข้อผิดพลาดในการดึงข้อมูล",
             status_sending: "ระบบกำลังส่งคำขอ...", link_checking: "กำลังตรวจสอบการอนุญาตเข้าถึงลิงก์...",
-            profile_title: "ข้อมูลส่วนบุคคล", profile_btn_change: "เปลี่ยนรูปโปรไฟล์", profile_name: "ชื่อแสดงผล", profile_id: "รหัสประจำตัว (ID - ติดต่อแอดมินเพื่อแก้ไข)", profile_pass: "รหัสผ่านเข้าสู่ระบบ (เว้นว่างได้)", profile_save: "บันทึกข้อมูล"
+            profile_title: "ข้อมูลส่วนบุคคล", profile_btn_change: "เปลี่ยนรูปโปรไฟล์", profile_name: "ชื่อแสดงผล", profile_id: "รหัสประจำตัว (ID - ติดต่อแอดมินเพื่อแก้ไข)", profile_pass: "รหัสผ่านเข้าสู่ระบบ (เว้นว่างได้)", profile_save: "บันทึกข้อมูล", crop_title: "ครอบตัดรูปภาพ",
+            confirm_name_change: "ยืนยันการเปลี่ยนชื่อแสดงผล?\n(หากยืนยันแล้ว คุณจะไม่สามารถเปลี่ยนชื่อได้อีกเป็นเวลา 3 วัน)", name_cooldown: "เปลี่ยนชื่อได้อีกครั้งใน", days: "วัน"
         },
         EN: {
             logo: "Doc System", nav_1: "System", nav_2: "Privacy Policy", nav_3: "Manual", nav_4: "Contact",
@@ -1007,7 +1032,8 @@
             btn_re_request: "Submit request again", status_expired: "Status: Your access right has expired", btn_renew: "Request renewal",
             link_no_access: "You do not have permission to access this link. Please check status above.", error_fetch: "Error fetching data",
             status_sending: "Sending request...", link_checking: "Checking link access permissions...",
-            profile_title: "Profile", profile_btn_change: "Change Picture", profile_name: "Display Name", profile_id: "User ID (Contact admin to change)", profile_pass: "Login Password (Optional)", profile_save: "Save Data"
+            profile_title: "Profile", profile_btn_change: "Change Picture", profile_name: "Display Name", profile_id: "User ID (Contact admin to change)", profile_pass: "Login Password (Optional)", profile_save: "Save Data", crop_title: "Crop Image",
+            confirm_name_change: "Confirm name change?\n(If confirmed, you won't be able to change it again for 3 days.)", name_cooldown: "You can change your name again in", days: "days"
         },
         CN: {
             logo: "文件系统", nav_1: "系统", nav_2: "隐私政策", nav_3: "手册", nav_4: "联系我们",
@@ -1032,7 +1058,7 @@
             manual_li3: "第三步：使用右上角图标更改视图（图标、列表、树状图）", manual_li4: "第四步：如果文件被锁定，请输入管理员提供的密码",
             manual_li5: "第五步：如需下载，点击“请求访问”并等待批准", manual_li6: "第六步：通过右上角的图标查看日程和提醒", manual_li7: "第七步：从顶部菜单更改语言和文字大小（Aa 按钮）",
             login_placeholder: "输入姓名或身份证号...", login_pass_placeholder: "密码 (如已设置)...", search_placeholder: "搜索文件", pwd_placeholder: "密码", user_id: "用户ID:",
-            sort_icon: "图标", sort_list: "列表", sort_tree: "树状", sort_name: "名称", sort_type: "类型", sort_date: "日期", sort_size: "大小",
+            sort_icon: "图标", sort_list: "列表", sort树: "树状", sort_name: "名称", sort_type: "类型", sort_date: "日期", sort_size: "大小",
             sort_name_asc: "A 到 Z", sort_name_desc: "Z 到 A", sort_date_asc: "从旧到新", sort_date_desc: "从新到旧", sort_size_asc: "从小到大", sort_size_desc: "从大到小",
             locked: "受密码保护", prompt_folder_lock: "此文件夹已被锁定。请输入密码：", prompt_file_lock: "此文件已被锁定。请输入密码：", wrong_pwd: "密码错误",
             empty_search: "未找到搜索的文件", empty_folder: "此文件夹中没有文件", empty_data: "没有数据",
@@ -1046,7 +1072,8 @@
             btn_re_request: "重新提交申请", status_expired: "状态：您的访问权限已过期", btn_renew: "申请续期",
             link_no_access: "您无权访问此链接。请检查上方状态。", error_fetch: "获取数据时出错",
             status_sending: "正在发送请求...", link_checking: "正在检查链接访问权限...",
-            profile_title: "个人信息", profile_btn_change: "更换头像", profile_name: "显示名称", profile_id: "用户ID (联系管理员修改)", profile_pass: "登录密码 (可选)", profile_save: "保存数据"
+            profile_title: "个人信息", profile_btn_change: "更换头像", profile_name: "显示名称", profile_id: "用户ID (联系管理员修改)", profile_pass: "登录密码 (可选)", profile_save: "保存数据", crop_title: "裁剪图片",
+            confirm_name_change: "确认更改显示名称？\n(确认后，您将在3天内无法再次更改)", name_cooldown: "您可以再次更改名称于", days: "天内"
         }
     };
 
@@ -1287,23 +1314,72 @@
     }
     
     // ----------------------------------------------------
-    // ระบบจัดการโปรไฟล์ส่วนตัว (Profile Management)
+    // ระบบจัดการโปรไฟล์ส่วนตัว และ Crop รูปภาพ
     // ----------------------------------------------------
     window.previewProfilePic = function(event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                tempProfileBase64 = e.target.result;
-                const preview = document.getElementById('profilePreview');
-                const defaultIcon = document.getElementById('profileDefault');
-                preview.src = tempProfileBase64;
-                preview.style.display = 'block';
-                defaultIcon.style.display = 'none';
+                // แสดง Modal สำหรับ Crop รูปภาพ
+                document.getElementById('cropModal').style.display = 'flex';
+                const image = document.getElementById('imageToCrop');
+                image.src = e.target.result;
+                
+                // ล้างค่า Cropper เดิมหากมี
+                if(cropperInstance) { cropperInstance.destroy(); }
+                
+                // ตั้งค่า Cropper.js (อัตราส่วน 1:1)
+                cropperInstance = new Cropper(image, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    background: false,
+                    dragMode: 'move'
+                });
             };
             reader.readAsDataURL(file);
         }
+        event.target.value = ''; // เคลียร์ input เพื่อให้เลือกไฟล์เดิมซ้ำได้
     }
+    
+    // ฟังก์ชันยกเลิกการครอป
+    window.cancelCrop = function() {
+        document.getElementById('cropModal').style.display = 'none';
+        if(cropperInstance) {
+            cropperInstance.destroy();
+            cropperInstance = null;
+        }
+    }
+    
+    // ฟังก์ชันยืนยันการครอป
+    window.confirmCrop = function() {
+        if(!cropperInstance) return;
+        
+        // รับค่ารูปที่ถูกครอปเป็น Canvas
+        const canvas = cropperInstance.getCroppedCanvas({
+            width: 300,
+            height: 300
+        });
+        
+        // แปลง Canvas เป็น Base64
+        tempProfileBase64 = canvas.toDataURL('image/jpeg', 0.8);
+        
+        const preview = document.getElementById('profilePreview');
+        const defaultIcon = document.getElementById('profileDefault');
+        
+        preview.src = tempProfileBase64;
+        preview.style.display = 'block';
+        defaultIcon.style.display = 'none';
+        
+        // ปิด Crop Modal และทำลายอินสแตนซ์
+        document.getElementById('cropModal').style.display = 'none';
+        cropperInstance.destroy();
+        cropperInstance = null;
+    }
+
+    // ตัวแปรสำหรับตรวจสอบการจำกัดการเปลี่ยนชื่อ (3 วัน)
+    window.currentProfileName = "";
+    window.isNameLocked = false;
 
     window.openProfileModal = async function() {
         if(!currentId) return;
@@ -1312,18 +1388,45 @@
             let currentName = "";
             let currentPass = "";
             let currentPic = "";
+            let lastNameChangeAt = 0;
             
             if(userDocSnap.exists()) {
                 const data = userDocSnap.data();
                 if(data.displayName) currentName = data.displayName;
                 if(data.password) currentPass = data.password;
                 if(data.profilePic) currentPic = data.profilePic;
+                if(data.lastNameChangeAt) lastNameChangeAt = data.lastNameChangeAt.toMillis();
             }
             
+            window.currentProfileName = currentName; // เก็บค่าเดิมไว้เปรียบเทียบ
+
             document.getElementById('profileIdInput').value = currentId; // แสดง ID ที่แก้ไขไม่ได้
             document.getElementById('profileNameInput').value = currentName;
             document.getElementById('profilePasswordInput').value = currentPass;
             
+            // ตรวจสอบเงื่อนไขล็อก 3 วัน
+            const now = Date.now();
+            const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+            const timeDiff = now - lastNameChangeAt;
+            const nameInput = document.getElementById('profileNameInput');
+            const cooldownMsg = document.getElementById('nameCooldownMsg');
+            
+            if (lastNameChangeAt > 0 && timeDiff < THREE_DAYS_MS) {
+                let daysLeft = Math.ceil((THREE_DAYS_MS - timeDiff) / (1000 * 60 * 60 * 24));
+                nameInput.disabled = true;
+                nameInput.style.backgroundColor = "#e5e5ea";
+                nameInput.style.cursor = "not-allowed";
+                cooldownMsg.innerText = `* ${t('name_cooldown')} ${daysLeft} ${t('days')}`;
+                cooldownMsg.style.display = 'block';
+                window.isNameLocked = true;
+            } else {
+                nameInput.disabled = false;
+                nameInput.style.backgroundColor = "#f5f5f7";
+                nameInput.style.cursor = "text";
+                cooldownMsg.style.display = 'none';
+                window.isNameLocked = false;
+            }
+
             const preview = document.getElementById('profilePreview');
             const defaultIcon = document.getElementById('profileDefault');
             if(currentPic) {
@@ -1348,13 +1451,28 @@
         const newName = document.getElementById('profileNameInput').value.trim();
         const newPass = document.getElementById('profilePasswordInput').value.trim();
         
+        let updateData = {
+            password: newPass,
+            profilePic: tempProfileBase64,
+            updatedAt: serverTimestamp()
+        };
+        
+        // ตรวจสอบว่ามีการเปลี่ยนชื่อและไม่ได้ติดล็อก
+        let isNameChanged = (!window.isNameLocked && newName !== window.currentProfileName && newName !== "");
+        
+        if (isNameChanged) {
+            // แจ้งเตือนก่อนแก้ไขชื่อ
+            if (!confirm(t('confirm_name_change'))) {
+                return; // ถ้ายกเลิก ก็หยุดการบันทึก
+            }
+            updateData.displayName = newName;
+            updateData.lastNameChangeAt = serverTimestamp(); // บันทึกเวลาที่เปลี่ยน
+        } else if (!window.isNameLocked && newName !== "") {
+            updateData.displayName = newName;
+        }
+
         try {
-            await setDoc(doc(db, "users", currentId), {
-                displayName: newName,
-                password: newPass,
-                profilePic: tempProfileBase64,
-                updatedAt: serverTimestamp()
-            }, { merge: true });
+            await setDoc(doc(db, "users", currentId), updateData, { merge: true });
             
             document.getElementById('profileModal').style.display = 'none';
             showToastAlert("บันทึกข้อมูลส่วนบุคคลเรียบร้อยแล้ว");
