@@ -1010,7 +1010,7 @@
             cookie_mark_title: "คุกกี้เพื่อการโฆษณา", cookie_mark_desc: "ติดตามพฤติกรรมเพื่อนำไปวิเคราะห์และยิงโฆษณาที่ตรงใจ",
             btn_cancel: "ยกเลิก", btn_save: "บันทึกการตั้งค่า", btn_confirm: "ตกลง", btn_ack: "รับทราบ",
             pwd_title: "กรุณาใส่รหัสผ่าน",
-            sys_login_title: "Document System", sys_login_desc: "กรุณาระบุตัวตนเพื่อตรวจสอบสิทธิ์การเข้าถึง (Smart Login)", sys_btn_login: "เข้าสู่ระบบ", sys_menu_subtitle: "กรุณาเลือกรายการที่คุณต้องการเข้าชม", sys_path_home: "หน้าหลัก",
+            sys_login_title: "Document System", sys_login_desc: "กรุณาระบุตัวตนเพื่อตรวจสอบสิทธิ์การเข้าถึง (Smart Login)", sys_login_btn: "เข้าสู่ระบบ", sys_menu_subtitle: "กรุณาเลือกรายการที่คุณต้องการเข้าชม", sys_path_home: "หน้าหลัก",
             pause_title: "อยู่ระหว่างการพักการแสดงข้อมูล", pause_desc: "รายการนี้กำลังถูกปิดปรับปรุงหรือพักการใช้งานชั่วคราว", bot_error: "ระบบรักษาความปลอดภัย<br>กรุณายืนยันตัวตนว่าท่านไม่ใช่โปรแกรมอัตโนมัติ",
             manual_h1: "สอนการใช้งานระบบ", manual_h3: "วิธีการใช้งานระบบเบื้องต้น", 
             manual_li1: "ขั้นตอนที่ 1: เข้าสู่ระบบด้วยรหัสประจำตัว (Smart Login)", manual_li2: "ขั้นตอนที่ 2: ค้นหาและดูไฟล์จากหน้าหลักผ่านช่องค้นหา",
@@ -1050,7 +1050,7 @@
             cookie_mark_title: "Marketing Cookies", cookie_mark_desc: "Track behavior to serve relevant advertisements",
             btn_cancel: "Cancel", btn_save: "Save", btn_confirm: "Confirm", btn_ack: "Acknowledge",
             pwd_title: "Enter Password",
-            sys_login_title: "Document System", sys_login_desc: "Please identify yourself to verify access (Smart Login)", sys_btn_login: "Login", sys_menu_subtitle: "Please select the item you want to view", sys_path_home: "Home",
+            sys_login_title: "Document System", sys_login_desc: "Please identify yourself to verify access (Smart Login)", sys_login_btn: "Login", sys_menu_subtitle: "Please select the item you want to view", sys_path_home: "Home",
             pause_title: "Information Paused", pause_desc: "This item is currently under maintenance or temporarily paused.", bot_error: "Security System<br>Please verify you are human.",
             manual_h1: "System Manual", manual_h3: "Basic Usage",
             manual_li1: "Step 1: Login with your ID (Smart Login)", manual_li2: "Step 2: Search and view files from home page",
@@ -1689,12 +1689,16 @@
             }
         }
         
+        // ใช้ Promise.all โหลดข้อมูลระบบสมบูรณ์ 100% ป้องกันเน็ตหลุด/โหลดไม่ครบ
         const q1 = query(collection(db, "jobs"), where("allowedUsers", "array-contains", rawId));
         const q2 = query(collection(db, "jobs"), where("searchableUsers", "array-contains", searchId));
         const qRem = query(collection(db, "reminders"), where("allowedUsers", "array-contains", rawId));
         const qSch = query(collection(db, "schedules"), where("allowedUsers", "array-contains", rawId));
+        const q3 = query(collection(db, "jobs"), where("type", "==", "system_folder"));
 
-        const [snap1, snap2, snapRem, snapSch] = await Promise.all([getDocs(q1), getDocs(q2), getDocs(qRem), getDocs(qSch)]);
+        const [snap1, snap2, snapRem, snapSch, snap3] = await Promise.all([
+            getDocs(q1), getDocs(q2), getDocs(qRem), getDocs(qSch), getDocs(q3)
+        ]);
 
         const fileMap = new Map();
         snap1.forEach(docSnap => { fileMap.set(docSnap.id, { id: docSnap.id, ...docSnap.data() }); });
@@ -1717,8 +1721,6 @@
           }
           currentId = matchedId;
           
-          const q3 = query(collection(db, "jobs"), where("type", "==", "system_folder"));
-          const snap3 = await getDocs(q3);
           snap3.forEach(docSnap => {
               const data = docSnap.data();
               let path = (data.folder || "").trim().replace(/^\/+|\/+$/g, '');
@@ -2070,7 +2072,7 @@
 
               subFiles.forEach(f => {
                   let file = f.file; let index = f.index; let title = f.title;
-                  let iconSvg = icons.pdf; if (file.type === "youtube") iconSvg = icons.youtube; else if (file.type === "image") iconSvg = icons.image; else if (file.type === "link") iconSvg = icons.link;
+                  let iconSvg = icons.pdf; if (file.type === "youtube") iconSvg = icons.youtube; else if (file.type === "image") iconSvg = icons.image; else if (file.type === "link") iconSvg = icons.link; else if (file.type === "text") iconSvg = icons.text;
                   let lockIcon = file.password ? `<span style="margin-left: 5px; color: var(--apple-text-muted); display: flex;">${icons.lock}</span>` : "";
                   let isPaused = file.isPaused || isPathPaused(file.normalizedPath);
                   let iconDisplay = isPaused ? `<div class="loader-wrapper" style="height: 18px; width: 18px; margin-right: 8px; margin-bottom: 0;"><div class="z z-1" style="font-size: 12px;">Z</div><div class="z z-2" style="font-size: 12px;">Z</div><div class="z z-3" style="font-size: 12px;">Z</div><div class="z z-4" style="font-size: 12px;">Z</div></div>` : `<div style="display:flex; align-items:center; justify-content:center; width:18px; height:18px; margin-right:8px;">${iconSvg}</div>`;
@@ -2188,7 +2190,7 @@
       
       filesToRender.forEach((file) => {
           const index = userFiles.findIndex(f => f.id === file.id);
-          let iconSvg = icons.pdf; if (file.type === "youtube") iconSvg = icons.youtube; else if (file.type === "image") iconSvg = icons.image; else if (file.type === "link") iconSvg = icons.link;
+          let iconSvg = icons.pdf; if (file.type === "youtube") iconSvg = icons.youtube; else if (file.type === "image") iconSvg = icons.image; else if (file.type === "link") iconSvg = icons.link; else if (file.type === "text") iconSvg = icons.text;
           let lockHtml = file.password ? `<div class="grid-lock">${icons.lock} ${t('locked')}</div>` : "";
           let fileTimeStr = file.updatedAt ? formatTime(file.updatedAt) : (file.createdAt ? formatTime(file.createdAt) : "");
           let isPaused = file.isPaused || isPathPaused(file.normalizedPath);
@@ -2277,6 +2279,9 @@
         } else viewer.innerHTML = `<img class="block-interaction" src="${imgUrl}" style="object-fit: contain;">`;
       } else if (file.type === "pdf") {
         blocker.style.display = "block"; viewer.innerHTML = `<iframe class="pdf-viewer" src="${file.url}#toolbar=0&navpanes=0&scrollbar=0" allowfullscreen></iframe>`;
+      } else if (file.type === "text") {
+        blocker.style.display = "none"; 
+        viewer.innerHTML = `<div style="background: white; padding: 25px; border-radius: 12px; height: 100%; overflow-y: auto; text-align: left; font-size: 15px; border: 1px solid #d2d2d7;">${file.textContent || ""}</div>`;
       }
       
       checkDownloadStatus(file.id);
@@ -2308,20 +2313,24 @@
             // ลบข้อมูลใน Firebase
             await deleteDoc(doc(db, "jobs", jobId));
             
-            // หากเป็นไฟล์ของ Supabase พยายามลบไฟล์จริงออกจาก Storage ด้วย
+            // ลบไฟล์จริงใน Supabase Storage (อัปเดต API Payload ใหม่)
             if(fileUrl && fileUrl.includes(SUPABASE_URL)) {
                 try {
-                    // ดึง Path ของไฟล์ออกมาจาก URL
                     const pathMatch = fileUrl.split(`/public/${SUPABASE_BUCKET}/`);
                     if(pathMatch && pathMatch[1]) {
                         const filePath = decodeURIComponent(pathMatch[1]);
-                        const deleteUrl = `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${encodeURIComponent(filePath)}`;
+                        const deleteUrl = `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}`;
+                        
                         await fetch(deleteUrl, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                                'apikey': SUPABASE_ANON_KEY
-                            }
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                prefixes: [filePath]
+                            })
                         });
                     }
                 } catch(err) {
@@ -2356,7 +2365,13 @@
         if (isApproved) {
             let expireMsg = `<p style="margin-top: 14px; margin-bottom: 0; font-size: 14px; color: var(--apple-text-muted); font-weight: 500;">${t('status_permanent')}</p>`;
             if (reqSnap.data().expiresAt) expireMsg = `<p style="margin-top: 14px; margin-bottom: 0; font-size: 14px; color: var(--apple-text-muted); font-weight: 500;">${t('status_expire')}${formatTime(reqSnap.data().expiresAt)}</p>`;
-            downloadSection.innerHTML = `<button class="sys-btn" style="background: var(--pink-primary); margin-bottom: 0;" onclick="downloadWork('${jobId}')">${t('btn_download')}</button>${expireMsg}`;
+            
+            const file = userFiles.find(f => f.id === jobId);
+            if (file && file.type === "text") {
+                downloadSection.innerHTML = `<p style="margin-top: 0; margin-bottom: 0; font-size: 15px; color: #34c759; font-weight: 600;">อนุญาตให้เข้าถึงเนื้อหาได้แล้ว</p>${expireMsg}`;
+            } else {
+                downloadSection.innerHTML = `<button class="sys-btn" style="background: var(--pink-primary); margin-bottom: 0;" onclick="downloadWork('${jobId}')">${t('btn_download')}</button>${expireMsg}`;
+            }
             if (linkStatusText) linkStatusText.innerHTML = `<button onclick="downloadWork('${jobId}')" class="link-btn" style="border:none; cursor:pointer; background: var(--pink-primary);">${t('btn_link_access')}</button>`;
         } else {
             if (!reqSnap.exists()) {
